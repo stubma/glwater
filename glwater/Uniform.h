@@ -13,6 +13,7 @@ typedef enum {
     SAMPLER_2D,
     SAMPLER_CUBE,
     FLOAT,
+    VECTOR_2,
     VECTOR_3,
     MATRIX_3,
     MATRIX_4
@@ -21,6 +22,7 @@ typedef enum {
 typedef union {
     GLint i;
     GLfloat f;
+    GLKVector2 v2;
     GLKVector3 v3;
     GLKMatrix4 m4;
     GLKMatrix3 m3;
@@ -41,10 +43,14 @@ typedef union {
 #define UNIFORM_NAME_NORMAL_MATRIX @"normalMatrix"
 #define UNIFORM_NAME_MVP_MATRIX @"modelViewProjectionMatrix"
 #define UNIFORM_NAME_TILES @"tiles"
+#define UNIFORM_NAME_CAUSTIC @"causticTex"
 #define UNIFORM_NAME_EYE @"eye"
 #define UNIFORM_NAME_WATER @"water"
 #define UNIFORM_NAME_SKY @"sky"
 #define UNIFORM_NAME_LIGHT @"light"
+#define UNIFORM_NAME_SPHERECENTER @"sphereCenter"
+#define UNIFORM_NAME_SPHERERADIUS @"sphereRadius"
+#define UNIFORM_NAME_DELTA @"delta"
 #define UNIFORM_NORMAL_MATRIX \
     [[Uniform alloc] initWithName:UNIFORM_NAME_NORMAL_MATRIX andType:MATRIX_3]
 #define UNIFORM_MVP_MATRIX \
@@ -59,3 +65,11 @@ typedef union {
     [[Uniform alloc] initWithName:UNIFORM_NAME_SKY andType:SAMPLER_CUBE]
 #define UNIFORM_LIGHT \
     [[Uniform alloc] initWithName:UNIFORM_NAME_LIGHT andType:VECTOR_3]
+#define UNIFORM_SPHERECENTER \
+    [[Uniform alloc] initWithName:UNIFORM_NAME_SPHERECENTER andType:VECTOR_3]
+#define UNIFORM_SPHERERADIUS \
+    [[Uniform alloc] initWithName:UNIFORM_NAME_SPHERERADIUS andType:FLOAT]
+#define UNIFORM_CAUSTIC \
+    [[Uniform alloc] initWithName:UNIFORM_NAME_CAUSTIC andType:SAMPLER_2D]
+#define UNIFORM_DELTA \
+    [[Uniform alloc] initWithName:UNIFORM_NAME_DELTA andType:VECTOR_2]

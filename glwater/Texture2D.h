@@ -11,5 +11,9 @@
 @interface Texture2D : Texture
 
 - (id)initWithImage:(NSString*)name;
+- (id)initWithSize:(CGSize)size;
+- (id)initWithSize:(CGSize)size withType:(GLenum)type;
+- (void)setAsTarget;
+- (void)restoreTarget;
 
 @end

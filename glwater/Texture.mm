@@ -14,6 +14,7 @@
     if(self = [super init]) {
         self.info = (tImageInfo*)calloc(1, sizeof(tImageInfo));
         self.target = 0;
+        self.unit = 0;
         glGenTextures(1, &_t);
         glBindTexture(GL_TEXTURE_2D, self.t);
     }
@@ -32,13 +33,21 @@
 }
 
 - (void)bind:(int)tnum {
+    self.unit = tnum;
     glActiveTexture(GL_TEXTURE0 + tnum);
     glBindTexture(self.target, self.t);
 }
 
 - (void)unbind:(int)tnum {
+    self.unit = 0;
     glActiveTexture(GL_TEXTURE0 + tnum);
     glBindTexture(self.target, 0);
+}
+
+- (void)bindUniform:(NSString*)u ofProgram:(Program*)p {
+    UniformValue v;
+    v.i = self.unit;
+    [p setUniformValue:v byName:u];
 }
 
 - (BOOL)rgba8888DataFromImage:(NSString*)file {

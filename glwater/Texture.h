@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
+#import "Program.h"
 
 typedef struct {
     unsigned int height;
@@ -22,9 +23,11 @@ typedef struct {
 
 - (void)bind:(int)tnum;
 - (void)unbind:(int)tnum;
+- (void)bindUniform:(NSString*)u ofProgram:(Program*)p;
 - (BOOL)rgba8888DataFromImage:(NSString*)file;
 - (unsigned char*)rgb888DataFromImage:(NSString*)file;
 
+@property (assign, nonatomic) GLuint unit;
 @property (assign, nonatomic) GLuint t;
 @property (assign, nonatomic) tImageInfo* info;
 @property (assign, nonatomic) GLenum target;

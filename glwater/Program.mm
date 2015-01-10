@@ -184,6 +184,9 @@
                 case FLOAT:
                     glUniform1f(u.location, u.value.f);
                     break;
+                case VECTOR_2:
+                    glUniform2fv(u.location, 2, u.value.v2.v);
+                    break;
                 case VECTOR_3:
                     glUniform3fv(u.location, 3, u.value.v3.v);
                     break;

@@ -7,12 +7,19 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Texture2DHF.h"
-#import "Texture2DF.h"
+#import "Texture2D.h"
+#import "Program.h"
+#import "Mesh.h"
 
 @interface Water : NSObject
 
+- (void)stepSimulation;
+- (void)updateNormals;
+
 @property (strong, nonatomic) Texture2D* texA;
 @property (strong, nonatomic) Texture2D* texB;
+@property (strong, nonatomic) Program* updateShader;
+@property (strong, nonatomic) Program* normalShader;
+@property (strong, nonatomic) Mesh* plane;
 
 @end

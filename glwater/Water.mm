@@ -22,14 +22,63 @@
 
         // texture
         if(canUseFloatTexture) {
-            self.texA = [[Texture2DF alloc] initWithSize:CGSizeMake(256, 256)];
-            self.texB = [[Texture2DF alloc] initWithSize:CGSizeMake(256, 256)];
+            self.texA = [[Texture2D alloc] initWithSize:CGSizeMake(256, 256) withType:GL_FLOAT];
+            self.texB = [[Texture2D alloc] initWithSize:CGSizeMake(256, 256) withType:GL_FLOAT];
         } else if(canUseHalfFloatTexture) {
-            self.texA = [[Texture2DHF alloc] initWithSize:CGSizeMake(256, 256)];
-            self.texB = [[Texture2DHF alloc] initWithSize:CGSizeMake(256, 256)];
+            self.texA = [[Texture2D alloc] initWithSize:CGSizeMake(256, 256) withType:GL_HALF_FLOAT_OES];
+            self.texB = [[Texture2D alloc] initWithSize:CGSizeMake(256, 256) withType:GL_HALF_FLOAT_OES];
         }
+        
+        // shaders
+        self.updateShader = [[Program alloc] initWithShader:@"waterUpdateShader"];
+        [self.updateShader addUniform:UNIFORM_WATER];
+        [self.updateShader addUniform:UNIFORM_DELTA];
+        self.normalShader = [[Program alloc] initWithShader:@"waterNormalShader"];
+        [self.normalShader addUniform:UNIFORM_WATER];
+        [self.normalShader addUniform:UNIFORM_DELTA];
+        
+        // mesh
+        self.plane = [Mesh plane];
     }
     return self;
+}
+
+- (void)stepSimulation {
+    [self.texA bind:0];
+    [self.texA bindUniform:UNIFORM_NAME_WATER ofProgram:self.updateShader];
+    
+    UniformValue v;
+    v.v2 = GLKVector2Make(self.texA.info->width, self.texA.info->height);
+    [self.updateShader setUniformValue:v byName:UNIFORM_NAME_DELTA];
+    
+    [self.texB setAsTarget];
+    [self.updateShader use];
+    [self.plane draw];
+    [self.texB restoreTarget];
+    
+    // swap
+    Texture2D* tmp = self.texA;
+    self.texA = self.texB;
+    self.texB = tmp;
+}
+
+- (void)updateNormals {
+    [self.texA bind:0];
+    [self.texA bindUniform:UNIFORM_NAME_WATER ofProgram:self.normalShader];
+    
+    UniformValue v;
+    v.v2 = GLKVector2Make(self.texA.info->width, self.texA.info->height);
+    [self.normalShader setUniformValue:v byName:UNIFORM_NAME_DELTA];
+    
+    [self.texB setAsTarget];
+    [self.normalShader use];
+    [self.plane draw];
+    [self.texB restoreTarget];
+    
+    // swap
+    Texture2D* tmp = self.texA;
+    self.texA = self.texB;
+    self.texB = tmp;
 }
 
 @end

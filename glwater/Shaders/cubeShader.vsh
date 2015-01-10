@@ -8,7 +8,7 @@
 
 attribute vec4 position;
 
-varying mediump vec3 vPosition;
+varying lowp vec3 vPosition;
 
 uniform mat4 modelViewProjectionMatrix;
 
