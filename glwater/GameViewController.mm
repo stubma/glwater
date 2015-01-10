@@ -8,18 +8,9 @@
 
 #import "GameViewController.h"
 #import <OpenGLES/ES2/glext.h>
+#import "Program.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
-
-// Uniform index.
-enum
-{
-    UNIFORM_MODELVIEWPROJECTION_MATRIX,
-    UNIFORM_NORMAL_MATRIX,
-    UNIFORM_TILES,
-    NUM_UNIFORMS
-};
-GLint uniforms[NUM_UNIFORMS];
 
 // Attribute index.
 enum
@@ -38,7 +29,7 @@ typedef struct {
     unsigned char*  data;
 } tImageInfo;
 
-GLfloat gCubeVertexData[216] = 
+static const GLfloat sCubeMesh[216] =
 {
     // Data layout for each line below is:
     // positionX, positionY, positionZ,     normalX, normalY, normalZ,
@@ -83,6 +74,16 @@ GLfloat gCubeVertexData[216] =
     1.0f, 1.0f, -1.0f,         0.0f, 0.0f, -1.0f,
     -1.0f, -1.0f, -1.0f,       0.0f, 0.0f, -1.0f,
     -1.0f, 1.0f, -1.0f,        0.0f, 0.0f, -1.0f
+};
+
+static GLfloat sPlaneMesh[] = {
+    -1, -1, 0,
+    1, -1, 0,
+    -1, 1, 0,
+    
+    -1, 1, 0,
+    1, -1, 0,
+    1, 1, 0
 };
 
 static bool _initWithImage(CGImageRef cgImage, tImageInfo *pImageinfo)
@@ -170,8 +171,6 @@ static unsigned char* getImageData(NSString* file) {
 }
 
 @interface GameViewController () {
-    GLKMatrix4 _modelViewProjectionMatrix;
-    GLKMatrix3 _normalMatrix;
     float _rotation;
     
     GLuint _vertexArray;
@@ -180,7 +179,7 @@ static unsigned char* getImageData(NSString* file) {
 @property (strong, nonatomic) EAGLContext *context;
 @property (assign, nonatomic) BOOL canUseFloatTexture;
 @property (assign, nonatomic) BOOL canUseHalfFloatTexture;
-@property (assign, nonatomic) GLuint cubeShader;
+@property (strong, nonatomic) Program* cubeShader;
 @property (assign, nonatomic) GLuint cubemap;
 @property (assign, nonatomic) GLuint tiles;
 @property (assign, nonatomic) GLuint waterA;
@@ -188,14 +187,13 @@ static unsigned char* getImageData(NSString* file) {
 @property (assign, nonatomic) float angleX;
 @property (assign, nonatomic) float angleY;
 @property (assign, nonatomic) CGPoint lastLoc;
+@property (assign, nonatomic) GLKMatrix4 projectionMatrix;
+@property (assign, nonatomic) GLKMatrix3 normalMatrix;
+@property (assign, nonatomic) GLKMatrix4 modelViewProjectionMatrix;
 
 - (void)setupGL;
 - (void)tearDownGL;
 
-- (GLuint)loadShaders:(NSString*)name;
-- (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file;
-- (BOOL)linkProgram:(GLuint)prog;
-- (BOOL)validateProgram:(GLuint)prog;
 - (BOOL)isExtensionSupported:(const char*)name;
 
 @end
@@ -206,16 +204,22 @@ static unsigned char* getImageData(NSString* file) {
 {
     [super viewDidLoad];
     
+    // init context
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-
     if (!self.context) {
         NSLog(@"Failed to create ES context");
     }
     
+    // init gl view
     GLKView *view = (GLKView *)self.view;
     view.context = self.context;
     view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
     
+    // init projection matrix
+    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
+    self.projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45), aspect, 0.01f, 100.0f);
+    
+    // init other gl
     [self setupGL];
 }
 
@@ -259,22 +263,24 @@ static unsigned char* getImageData(NSString* file) {
 {
     [EAGLContext setCurrentContext:self.context];
     
-    self.cubeShader = [self loadShaders:@"cubeShader"];
+    self.cubeShader = [[Program alloc] initWithShader:@"cubeShader"];
+    [self.cubeShader addUniform:UNIFORM_MVP_MATRIX];
+    [self.cubeShader addUniform:UNIFORM_NORMAL_MATRIX];
+    [self.cubeShader addUniform:UNIFORM_TILES];
+    
     self.angleX = -25;
     self.angleY = -200;
     
+    // cube vao
     glGenVertexArraysOES(1, &_vertexArray);
     glBindVertexArrayOES(_vertexArray);
-    
     glGenBuffers(1, &_vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(gCubeVertexData), gCubeVertexData, GL_STATIC_DRAW);
-    
+    glBufferData(GL_ARRAY_BUFFER, sizeof(sCubeMesh), sCubeMesh, GL_STATIC_DRAW);
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 24, BUFFER_OFFSET(0));
     glEnableVertexAttribArray(GLKVertexAttribNormal);
     glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, 24, BUFFER_OFFSET(12));
-    
     glBindVertexArrayOES(0);
     
     // build cubemap
@@ -320,6 +326,24 @@ static unsigned char* getImageData(NSString* file) {
     if(!self.canUseFloatTexture && !self.canUseHalfFloatTexture) {
         NSLog(@"This demo requires the OES_texture_float extension");
     }
+    
+    // water texture a
+    glGenTextures(1, &_waterA);
+    glBindTexture(GL_TEXTURE_2D, self.waterA);
+    if(self.canUseFloatTexture) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_FLOAT, nullptr);
+    } else if(self.canUseHalfFloatTexture) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_HALF_FLOAT_OES, nullptr);
+    }
+    
+    // water texture b
+    glGenTextures(1, &_waterB);
+    glBindTexture(GL_TEXTURE_2D, self.waterB);
+    if(self.canUseFloatTexture) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_FLOAT, nullptr);
+    } else if(self.canUseHalfFloatTexture) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_HALF_FLOAT_OES, nullptr);
+    }
 }
 
 - (void)tearDownGL
@@ -330,11 +354,6 @@ static unsigned char* getImageData(NSString* file) {
     glDeleteVertexArraysOES(1, &_vertexArray);
     glDeleteTextures(1, &_cubemap);
     glDeleteTextures(1, &_tiles);
-    
-    if (_cubeShader) {
-        glDeleteProgram(_cubeShader);
-        _cubeShader = 0;
-    }
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -353,17 +372,19 @@ static unsigned char* getImageData(NSString* file) {
 
 - (void)update
 {
-    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
-    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45), aspect, 0.01f, 100.0f);
-    
+    // update normal matrix and mvp matrix
     GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
     modelViewMatrix = GLKMatrix4Rotate(modelViewMatrix, GLKMathDegreesToRadians(-self.angleX), 1, 0, 0);
     modelViewMatrix = GLKMatrix4Rotate(modelViewMatrix, GLKMathDegreesToRadians(-self.angleY), 0, 1, 0);
     modelViewMatrix = GLKMatrix4Translate(modelViewMatrix, 0, 0.5f, 0);
+    self.normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
+    self.modelViewProjectionMatrix = GLKMatrix4Multiply(self.projectionMatrix, modelViewMatrix);
     
-    _normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
-    
-    _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
+    UniformValue v;
+    v.m3 = self.normalMatrix;
+    [self.cubeShader setUniformValue:v byName:UNIFORM_NAME_NORMAL_MATRIX];
+    v.m4 = self.modelViewProjectionMatrix;
+    [self.cubeShader setUniformValue:v byName:UNIFORM_NAME_MVP_MATRIX];
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
@@ -378,12 +399,10 @@ static unsigned char* getImageData(NSString* file) {
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, self.tiles);
     
-    // Render the object again with ES2
-    glUseProgram(self.cubeShader);
-    
-    glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
-    glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
-    glUniform1i(uniforms[UNIFORM_TILES], 1);
+    UniformValue v;
+    v.i = 1;
+    [self.cubeShader setUniformValue:v byName:UNIFORM_NAME_TILES];
+    [self.cubeShader use];
     
     glDrawArrays(GL_TRIANGLES, 0, 36);
     
@@ -391,157 +410,6 @@ static unsigned char* getImageData(NSString* file) {
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
-}
-
-#pragma mark -  OpenGL ES 2 shader compilation
-
-- (GLuint)loadShaders:(NSString*)name
-{
-    GLuint vertShader, fragShader;
-    NSString *vertShaderPathname, *fragShaderPathname;
-    
-    // Create shader program.
-    GLuint p = glCreateProgram();
-    
-    // Create and compile vertex shader.
-    vertShaderPathname = [[NSBundle mainBundle] pathForResource:name ofType:@"vsh"];
-    if (![self compileShader:&vertShader type:GL_VERTEX_SHADER file:vertShaderPathname]) {
-        NSLog(@"Failed to compile vertex shader");
-        return NO;
-    }
-    
-    // Create and compile fragment shader.
-    fragShaderPathname = [[NSBundle mainBundle] pathForResource:name ofType:@"fsh"];
-    if (![self compileShader:&fragShader type:GL_FRAGMENT_SHADER file:fragShaderPathname]) {
-        NSLog(@"Failed to compile fragment shader");
-        return NO;
-    }
-    
-    // Attach vertex shader to program.
-    glAttachShader(p, vertShader);
-    
-    // Attach fragment shader to program.
-    glAttachShader(p, fragShader);
-    
-    // Bind attribute locations.
-    // This needs to be done prior to linking.
-    glBindAttribLocation(p, GLKVertexAttribPosition, "position");
-    glBindAttribLocation(p, GLKVertexAttribNormal, "normal");
-    
-    // Link program.
-    if (![self linkProgram:p]) {
-        NSLog(@"Failed to link program: %d", p);
-        
-        if (vertShader) {
-            glDeleteShader(vertShader);
-            vertShader = 0;
-        }
-        if (fragShader) {
-            glDeleteShader(fragShader);
-            fragShader = 0;
-        }
-        if (p) {
-            glDeleteProgram(p);
-            p = 0;
-        }
-    } else {
-        // Get uniform locations.
-        uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(p, "modelViewProjectionMatrix");
-        uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(p, "normalMatrix");
-        uniforms[UNIFORM_TILES] = glGetUniformLocation(p, "tiles");
-        
-        // Release vertex and fragment shaders.
-        if (vertShader) {
-            glDetachShader(p, vertShader);
-            glDeleteShader(vertShader);
-        }
-        if (fragShader) {
-            glDetachShader(p, fragShader);
-            glDeleteShader(fragShader);
-        }
-    }
-    
-    return p;
-}
-
-- (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file
-{
-    GLint status;
-    const GLchar *source;
-    
-    source = (GLchar *)[[NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:nil] UTF8String];
-    if (!source) {
-        NSLog(@"Failed to load vertex shader");
-        return NO;
-    }
-    
-    *shader = glCreateShader(type);
-    glShaderSource(*shader, 1, &source, NULL);
-    glCompileShader(*shader);
-    
-#if defined(DEBUG)
-    GLint logLength;
-    glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength);
-    if (logLength > 0) {
-        GLchar *log = (GLchar *)malloc(logLength);
-        glGetShaderInfoLog(*shader, logLength, &logLength, log);
-        NSLog(@"Shader compile log:\n%s", log);
-        free(log);
-    }
-#endif
-    
-    glGetShaderiv(*shader, GL_COMPILE_STATUS, &status);
-    if (status == 0) {
-        glDeleteShader(*shader);
-        return NO;
-    }
-    
-    return YES;
-}
-
-- (BOOL)linkProgram:(GLuint)prog
-{
-    GLint status;
-    glLinkProgram(prog);
-    
-#if defined(DEBUG)
-    GLint logLength;
-    glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
-    if (logLength > 0) {
-        GLchar *log = (GLchar *)malloc(logLength);
-        glGetProgramInfoLog(prog, logLength, &logLength, log);
-        NSLog(@"Program link log:\n%s", log);
-        free(log);
-    }
-#endif
-    
-    glGetProgramiv(prog, GL_LINK_STATUS, &status);
-    if (status == 0) {
-        return NO;
-    }
-    
-    return YES;
-}
-
-- (BOOL)validateProgram:(GLuint)prog
-{
-    GLint logLength, status;
-    
-    glValidateProgram(prog);
-    glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
-    if (logLength > 0) {
-        GLchar *log = (GLchar *)malloc(logLength);
-        glGetProgramInfoLog(prog, logLength, &logLength, log);
-        NSLog(@"Program validate log:\n%s", log);
-        free(log);
-    }
-    
-    glGetProgramiv(prog, GL_VALIDATE_STATUS, &status);
-    if (status == 0) {
-        return NO;
-    }
-    
-    return YES;
 }
 
 @end

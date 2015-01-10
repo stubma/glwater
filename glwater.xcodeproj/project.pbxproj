@@ -22,6 +22,10 @@
 		92ACC85E1A5D8544001EE6D4 /* zneg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 92ACC8581A5D8544001EE6D4 /* zneg.jpg */; };
 		92ACC85F1A5D8544001EE6D4 /* zpos.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 92ACC8591A5D8544001EE6D4 /* zpos.jpg */; };
 		92ACC8631A5D89A3001EE6D4 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92ACC8621A5D89A3001EE6D4 /* GLKit.framework */; };
+		92B5FFC31A60EF3C003025EE /* waterShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 92B5FFC11A60EF3C003025EE /* waterShader.fsh */; };
+		92B5FFC41A60EF3C003025EE /* waterShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 92B5FFC21A60EF3C003025EE /* waterShader.vsh */; };
+		92B5FFCC1A60F273003025EE /* Program.mm in Sources */ = {isa = PBXBuildFile; fileRef = 92B5FFCB1A60F273003025EE /* Program.mm */; };
+		92B5FFCF1A60F61B003025EE /* Uniform.mm in Sources */ = {isa = PBXBuildFile; fileRef = 92B5FFCE1A60F61B003025EE /* Uniform.mm */; };
 		92F190DD1A5EC47F008AA456 /* cubeShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 92F190DB1A5EC47F008AA456 /* cubeShader.fsh */; };
 		92F190DE1A5EC47F008AA456 /* cubeShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 92F190DC1A5EC47F008AA456 /* cubeShader.vsh */; };
 /* End PBXBuildFile section */
@@ -46,6 +50,12 @@
 		92ACC8581A5D8544001EE6D4 /* zneg.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = zneg.jpg; sourceTree = "<group>"; };
 		92ACC8591A5D8544001EE6D4 /* zpos.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = zpos.jpg; sourceTree = "<group>"; };
 		92ACC8621A5D89A3001EE6D4 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		92B5FFC11A60EF3C003025EE /* waterShader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = waterShader.fsh; path = Shaders/waterShader.fsh; sourceTree = "<group>"; };
+		92B5FFC21A60EF3C003025EE /* waterShader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = waterShader.vsh; path = Shaders/waterShader.vsh; sourceTree = "<group>"; };
+		92B5FFCA1A60F273003025EE /* Program.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Program.h; sourceTree = "<group>"; };
+		92B5FFCB1A60F273003025EE /* Program.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Program.mm; sourceTree = "<group>"; };
+		92B5FFCD1A60F61B003025EE /* Uniform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Uniform.h; sourceTree = "<group>"; };
+		92B5FFCE1A60F61B003025EE /* Uniform.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Uniform.mm; sourceTree = "<group>"; };
 		92F190DB1A5EC47F008AA456 /* cubeShader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = cubeShader.fsh; path = Shaders/cubeShader.fsh; sourceTree = "<group>"; };
 		92F190DC1A5EC47F008AA456 /* cubeShader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = cubeShader.vsh; path = Shaders/cubeShader.vsh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -89,8 +99,14 @@
 				92ACC8321A5D8187001EE6D4 /* Shader.vsh */,
 				92F190DB1A5EC47F008AA456 /* cubeShader.fsh */,
 				92F190DC1A5EC47F008AA456 /* cubeShader.vsh */,
+				92B5FFC11A60EF3C003025EE /* waterShader.fsh */,
+				92B5FFC21A60EF3C003025EE /* waterShader.vsh */,
 				92ACC8341A5D8187001EE6D4 /* GameViewController.h */,
 				92ACC8351A5D8187001EE6D4 /* GameViewController.mm */,
+				92B5FFCD1A60F61B003025EE /* Uniform.h */,
+				92B5FFCE1A60F61B003025EE /* Uniform.mm */,
+				92B5FFCA1A60F273003025EE /* Program.h */,
+				92B5FFCB1A60F273003025EE /* Program.mm */,
 				92ACC8371A5D8187001EE6D4 /* Main.storyboard */,
 				92ACC83A1A5D8187001EE6D4 /* Images.xcassets */,
 				92ACC83C1A5D8187001EE6D4 /* LaunchScreen.xib */,
@@ -187,9 +203,11 @@
 				92F190DE1A5EC47F008AA456 /* cubeShader.vsh in Resources */,
 				92ACC85F1A5D8544001EE6D4 /* zpos.jpg in Resources */,
 				92ACC85D1A5D8544001EE6D4 /* ypos.jpg in Resources */,
+				92B5FFC31A60EF3C003025EE /* waterShader.fsh in Resources */,
 				92F190DD1A5EC47F008AA456 /* cubeShader.fsh in Resources */,
 				92ACC83B1A5D8187001EE6D4 /* Images.xcassets in Resources */,
 				92ACC8331A5D8187001EE6D4 /* Shader.vsh in Resources */,
+				92B5FFC41A60EF3C003025EE /* waterShader.vsh in Resources */,
 				92ACC8311A5D8187001EE6D4 /* Shader.fsh in Resources */,
 				92ACC85A1A5D8544001EE6D4 /* tiles.jpg in Resources */,
 			);
@@ -202,8 +220,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				92B5FFCC1A60F273003025EE /* Program.mm in Sources */,
 				92ACC82F1A5D8187001EE6D4 /* AppDelegate.m in Sources */,
 				92ACC8361A5D8187001EE6D4 /* GameViewController.mm in Sources */,
+				92B5FFCF1A60F61B003025EE /* Uniform.mm in Sources */,
 				92ACC82C1A5D8187001EE6D4 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
