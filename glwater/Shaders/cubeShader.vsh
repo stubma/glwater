@@ -7,12 +7,10 @@
 //
 
 attribute vec4 position;
-attribute vec3 normal;
 
 varying mediump vec3 vPosition;
 
 uniform mat4 modelViewProjectionMatrix;
-uniform mat3 normalMatrix;
 
 const vec3 lightDir = normalize(vec3(2.0, 2.0, -1.0));
 const float poolHeight = 1.0;

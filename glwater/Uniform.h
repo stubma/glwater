@@ -42,6 +42,9 @@ typedef union {
 #define UNIFORM_NAME_MVP_MATRIX @"modelViewProjectionMatrix"
 #define UNIFORM_NAME_TILES @"tiles"
 #define UNIFORM_NAME_EYE @"eye"
+#define UNIFORM_NAME_WATER @"water"
+#define UNIFORM_NAME_SKY @"sky"
+#define UNIFORM_NAME_LIGHT @"light"
 #define UNIFORM_NORMAL_MATRIX \
     [[Uniform alloc] initWithName:UNIFORM_NAME_NORMAL_MATRIX andType:MATRIX_3]
 #define UNIFORM_MVP_MATRIX \
@@ -50,3 +53,9 @@ typedef union {
     [[Uniform alloc] initWithName:UNIFORM_NAME_EYE andType:VECTOR_3]
 #define UNIFORM_TILES \
     [[Uniform alloc] initWithName:UNIFORM_NAME_TILES andType:SAMPLER_2D]
+#define UNIFORM_WATER \
+    [[Uniform alloc] initWithName:UNIFORM_NAME_WATER andType:SAMPLER_2D]
+#define UNIFORM_SKY \
+    [[Uniform alloc] initWithName:UNIFORM_NAME_SKY andType:SAMPLER_CUBE]
+#define UNIFORM_LIGHT \
+    [[Uniform alloc] initWithName:UNIFORM_NAME_LIGHT andType:VECTOR_3]
