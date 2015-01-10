@@ -16,20 +16,8 @@
 #import "Water.h"
 #import "Mesh.h"
 
-// Attribute index.
-enum
-{
-    ATTRIB_VERTEX,
-    ATTRIB_NORMAL,
-    NUM_ATTRIBUTES
-};
+@interface GameViewController ()
 
-@interface GameViewController () {
-    float _rotation;
-    
-    GLuint _vertexArray;
-    GLuint _vertexBuffer;
-}
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong, nonatomic) Program* cubeShader;
 @property (strong, nonatomic) Mesh* cubeMesh;
@@ -50,8 +38,7 @@ enum
 
 @implementation GameViewController
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
     
     // init context
@@ -73,8 +60,7 @@ enum
     [self setupGL];
 }
 
-- (void)dealloc
-{    
+- (void)dealloc {
     [self tearDownGL];
     
     if ([EAGLContext currentContext] == self.context) {
@@ -82,8 +68,7 @@ enum
     }
 }
 
-- (void)didReceiveMemoryWarning
-{
+- (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 
     if ([self isViewLoaded] && ([[self view] window] == nil)) {
@@ -104,8 +89,7 @@ enum
     return YES;
 }
 
-- (void)setupGL
-{
+- (void)setupGL {
     [EAGLContext setCurrentContext:self.context];
     
     // cube shader
@@ -132,8 +116,7 @@ enum
     self.tiles = [[Texture2D alloc] initWithImage:@"tiles.jpg"];
 }
 
-- (void)tearDownGL
-{
+- (void)tearDownGL {
     [EAGLContext setCurrentContext:self.context];
 }
 
