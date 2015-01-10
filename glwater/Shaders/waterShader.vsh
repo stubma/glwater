@@ -16,8 +16,7 @@ uniform mat3 normalMatrix;
 uniform sampler2D water;
 
 
-void main()
-{
+void main() {
     vec4 info = texture2D(water, position.xy * 0.5 + 0.5);
     vPosition = position.xzy;
     vPosition.y += info.r;

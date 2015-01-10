@@ -12,6 +12,7 @@ uniform sampler2D tiles;
 
 varying vec3 vPosition;
 
+const vec3 lightDir = normalize(vec3(2.0, 2.0, -1.0));
 const vec3 underwaterColor = vec3(0.4, 0.9, 1.0);
 const vec3 sphereCenter = vec3(0.0, 0.0, 0.0);
 const float sphereRadius = 0.0;
@@ -37,7 +38,6 @@ vec3 getWallColor(vec3 point) {
     return wallColor * scale;
 }
 
-void main()
-{
+void main() {
     gl_FragColor = vec4(getWallColor(vPosition), 1.0);
 }
