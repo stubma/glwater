@@ -55,35 +55,19 @@ static const GLfloat sCubeMesh[] = {
     -1.0f, 1.0f, -1.0f,
 };
 
-static GLfloat sPlaneMesh[] = {
-    -1, -1, 0,
-    1, -1, 0,
-    -1, 1, 0,
-    
-    -1, 1, 0,
-    1, -1, 0,
-    1, 1, 0
-};
-
 @implementation Mesh
 
 + (Mesh*)cube {
     Mesh* m = [[Mesh alloc] init];
-    GLuint vao, vbo;
-    glGenVertexArraysOES(1, &vao);
-    glBindVertexArrayOES(vao);
+    GLuint vbo;
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    m.vao = vao;
     m.vbo = vbo;
     m.ibo = 0;
     m.mode = GL_TRIANGLES;
     m.vertices = sizeof(sCubeMesh) / sizeof(GLfloat) / 3;
     m.triangles = m.vertices / 3;
     glBufferData(GL_ARRAY_BUFFER, sizeof(sCubeMesh), sCubeMesh, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 12, BUFFER_OFFSET(0));
-    glBindVertexArrayOES(0);
     return m;
 }
 
@@ -124,22 +108,16 @@ static GLfloat sPlaneMesh[] = {
     }
     
     // create vao, vbo, ibo
-    GLuint vao, vbo, ibo;
-    glGenVertexArraysOES(1, &vao);
-    glBindVertexArrayOES(vao);
+    GLuint vbo, ibo;
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glGenBuffers(1, &ibo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    m.vao = vao;
     m.vbo = vbo;
     m.ibo = ibo;
     m.mode = GL_TRIANGLES;
     glBufferData(GL_ARRAY_BUFFER, vbufIndex * sizeof(float), vbuf, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibufIndex * sizeof(GLushort), ibuf, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 12, BUFFER_OFFSET(0));
-    glBindVertexArrayOES(0);
     
     // free
     free(vbuf);
@@ -165,13 +143,13 @@ static GLfloat sPlaneMesh[] = {
     if(self.ibo > 0) {
         glDeleteBuffers(1, &_ibo);
     }
-    if(self.vao > 0) {
-        glDeleteVertexArraysOES(1, &_vao);
-    }
 }
 
 - (void)draw {
-    glBindVertexArrayOES(self.vao);
+    glBindBuffer(GL_ARRAY_BUFFER, self.vbo);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 12, BUFFER_OFFSET(0));
+    
     if(self.ibo > 0) {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ibo);
         glDrawElements(self.mode, self.triangles * 3, GL_UNSIGNED_SHORT, 0);

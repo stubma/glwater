@@ -18,7 +18,6 @@
 
 - (void)draw;
 
-@property (assign, nonatomic) GLuint vao;
 @property (assign, nonatomic) GLuint vbo;
 @property (assign, nonatomic) GLenum mode;
 @property (assign, nonatomic) GLuint ibo;
