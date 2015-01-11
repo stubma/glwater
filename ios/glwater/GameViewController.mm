@@ -240,7 +240,7 @@
     [self.water stepSimulation];
     [self.water stepSimulation];
 //    [self.water updateNormals];
-    [self updateCaustics];
+//    [self updateCaustics];
 }
 
 - (void)renderCube {
