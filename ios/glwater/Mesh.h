@@ -13,12 +13,16 @@
 
 + (Mesh*)cube;
 + (Mesh*)plane;
++ (Mesh*)plane:(int)detail;
 + (Mesh*)sphere;
 
 - (void)draw;
 
 @property (assign, nonatomic) GLuint vao;
 @property (assign, nonatomic) GLuint vbo;
+@property (assign, nonatomic) GLenum mode;
+@property (assign, nonatomic) GLuint ibo;
 @property (assign, nonatomic) int vertices;
+@property (assign, nonatomic) int triangles;
 
 @end

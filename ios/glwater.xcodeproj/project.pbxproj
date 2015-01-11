@@ -20,6 +20,9 @@
 		92ACC85E1A5D8544001EE6D4 /* zneg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 92ACC8581A5D8544001EE6D4 /* zneg.jpg */; };
 		92ACC85F1A5D8544001EE6D4 /* zpos.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 92ACC8591A5D8544001EE6D4 /* zpos.jpg */; };
 		92ACC8631A5D89A3001EE6D4 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92ACC8621A5D89A3001EE6D4 /* GLKit.framework */; };
+		92AE001F1A62789E001C6F8C /* Raytracer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 92AE001E1A62789E001C6F8C /* Raytracer.mm */; };
+		92AE00211A627E02001C6F8C /* causticsShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 92AE00201A627E02001C6F8C /* causticsShader.vsh */; };
+		92AE00231A627EAE001C6F8C /* causticsShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 92AE00221A627EAE001C6F8C /* causticsShader.fsh */; };
 		92B5FFC31A60EF3C003025EE /* waterShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 92B5FFC11A60EF3C003025EE /* waterShader.fsh */; };
 		92B5FFC41A60EF3C003025EE /* waterShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 92B5FFC21A60EF3C003025EE /* waterShader.vsh */; };
 		92B5FFCC1A60F273003025EE /* Program.mm in Sources */ = {isa = PBXBuildFile; fileRef = 92B5FFCB1A60F273003025EE /* Program.mm */; };
@@ -56,6 +59,10 @@
 		92ACC8581A5D8544001EE6D4 /* zneg.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = zneg.jpg; sourceTree = "<group>"; };
 		92ACC8591A5D8544001EE6D4 /* zpos.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = zpos.jpg; sourceTree = "<group>"; };
 		92ACC8621A5D89A3001EE6D4 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		92AE001D1A62789E001C6F8C /* Raytracer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Raytracer.h; sourceTree = "<group>"; };
+		92AE001E1A62789E001C6F8C /* Raytracer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Raytracer.mm; sourceTree = "<group>"; };
+		92AE00201A627E02001C6F8C /* causticsShader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = causticsShader.vsh; path = Shaders/causticsShader.vsh; sourceTree = "<group>"; };
+		92AE00221A627EAE001C6F8C /* causticsShader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = causticsShader.fsh; path = Shaders/causticsShader.fsh; sourceTree = "<group>"; };
 		92B5FFC11A60EF3C003025EE /* waterShader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = waterShader.fsh; path = Shaders/waterShader.fsh; sourceTree = "<group>"; };
 		92B5FFC21A60EF3C003025EE /* waterShader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = waterShader.vsh; path = Shaders/waterShader.vsh; sourceTree = "<group>"; };
 		92B5FFCA1A60F273003025EE /* Program.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Program.h; sourceTree = "<group>"; };
@@ -125,8 +132,12 @@
 				92B5FFEC1A612962003025EE /* waterUpdateShader.vsh */,
 				92B5FFC11A60EF3C003025EE /* waterShader.fsh */,
 				92B5FFC21A60EF3C003025EE /* waterShader.vsh */,
+				92AE00221A627EAE001C6F8C /* causticsShader.fsh */,
+				92AE00201A627E02001C6F8C /* causticsShader.vsh */,
 				92ACC8341A5D8187001EE6D4 /* GameViewController.h */,
 				92ACC8351A5D8187001EE6D4 /* GameViewController.mm */,
+				92AE001D1A62789E001C6F8C /* Raytracer.h */,
+				92AE001E1A62789E001C6F8C /* Raytracer.mm */,
 				92B5FFE21A610B4D003025EE /* LightGL.h */,
 				92B5FFE31A610B4D003025EE /* LightGL.mm */,
 				92B5FFCD1A60F61B003025EE /* Uniform.h */,
@@ -238,6 +249,7 @@
 				92ACC85B1A5D8544001EE6D4 /* xneg.jpg in Resources */,
 				92B5FFEE1A612962003025EE /* waterUpdateShader.vsh in Resources */,
 				92ACC8391A5D8187001EE6D4 /* Main.storyboard in Resources */,
+				92AE00211A627E02001C6F8C /* causticsShader.vsh in Resources */,
 				92F190DE1A5EC47F008AA456 /* cubeShader.vsh in Resources */,
 				92ACC85F1A5D8544001EE6D4 /* zpos.jpg in Resources */,
 				92ACC85D1A5D8544001EE6D4 /* ypos.jpg in Resources */,
@@ -248,6 +260,7 @@
 				92ACC85A1A5D8544001EE6D4 /* tiles.jpg in Resources */,
 				92B5FFF11A612B2E003025EE /* waterNormalShader.fsh in Resources */,
 				92B5FFF21A612B2E003025EE /* waterNormalShader.vsh in Resources */,
+				92AE00231A627EAE001C6F8C /* causticsShader.fsh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,6 +278,7 @@
 				92B5FFE41A610B4D003025EE /* LightGL.mm in Sources */,
 				92B5FFCF1A60F61B003025EE /* Uniform.mm in Sources */,
 				92B5FFD21A610302003025EE /* TextureCube.mm in Sources */,
+				92AE001F1A62789E001C6F8C /* Raytracer.mm in Sources */,
 				92B5FFD81A610409003025EE /* Texture2D.mm in Sources */,
 				92B5FFE11A610AA6003025EE /* Water.mm in Sources */,
 				92ACC82C1A5D8187001EE6D4 /* main.m in Sources */,

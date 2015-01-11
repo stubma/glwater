@@ -5,6 +5,9 @@
 //  Created by maruojie on 15/1/7.
 //  Copyright (c) 2015年 luma. All rights reserved.
 //
+#ifdef GL_ES
+precision mediump float;
+#endif
 
 attribute vec4 position;
 varying mediump vec2 coord;

@@ -12,6 +12,7 @@
 typedef enum {
     SAMPLER_2D,
     SAMPLER_CUBE,
+    BOOLEAN_TYPE,
     FLOAT,
     VECTOR_2,
     VECTOR_3,
@@ -51,6 +52,7 @@ typedef union {
 #define UNIFORM_NAME_SPHERECENTER @"sphereCenter"
 #define UNIFORM_NAME_SPHERERADIUS @"sphereRadius"
 #define UNIFORM_NAME_DELTA @"delta"
+#define UNIFORM_NAME_UNDERWATER @"underwater"
 #define UNIFORM_NORMAL_MATRIX \
     [[Uniform alloc] initWithName:UNIFORM_NAME_NORMAL_MATRIX andType:MATRIX_3]
 #define UNIFORM_MVP_MATRIX \
@@ -73,3 +75,5 @@ typedef union {
     [[Uniform alloc] initWithName:UNIFORM_NAME_CAUSTIC andType:SAMPLER_2D]
 #define UNIFORM_DELTA \
     [[Uniform alloc] initWithName:UNIFORM_NAME_DELTA andType:VECTOR_2]
+#define UNIFORM_UNDERWATER \
+    [[Uniform alloc] initWithName:UNIFORM_NAME_UNDERWATER andType:BOOLEAN_TYPE]

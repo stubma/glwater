@@ -49,7 +49,6 @@
         // Bind attribute locations.
         // This needs to be done prior to linking.
         glBindAttribLocation(p, GLKVertexAttribPosition, "position");
-        glBindAttribLocation(p, GLKVertexAttribNormal, "normal");
         
         // Link program.
         if (![self linkProgram:p]) {
@@ -179,6 +178,9 @@
             switch (u.valueType) {
                 case SAMPLER_2D:
                 case SAMPLER_CUBE:
+                    glUniform1i(u.location, u.value.i);
+                    break;
+                case BOOLEAN_TYPE:
                     glUniform1i(u.location, u.value.i);
                     break;
                 case FLOAT:
