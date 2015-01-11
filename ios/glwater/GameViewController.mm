@@ -265,9 +265,9 @@
     glEnable(GL_CULL_FACE);
     
     [self.tracer update:self.modelViewMatrix];
-    bool first = true;
+    bool underwater = false;
     for(Program* shader in self.waterShaders) {
-        glCullFace(first ? GL_FRONT : GL_BACK);
+        glCullFace(underwater ? GL_BACK : GL_FRONT);
         
         [self.water.texA bind:0];
         [self.water.texA bindUniform:UNIFORM_NAME_WATER ofProgram:shader];
@@ -289,8 +289,8 @@
         [shader setUniformValue:v byName:UNIFORM_NAME_LIGHT];
         v.v3 = self.tracer.eye;
         [shader setUniformValue:v byName:UNIFORM_NAME_EYE];
-        v.i = first;
-        first = false;
+        v.i = underwater;
+        underwater = !underwater;
         [shader setUniformValue:v byName:UNIFORM_NAME_UNDERWATER];
         
         [shader use];
