@@ -12,7 +12,7 @@ precision mediump float;
 
 attribute vec4 position;
 
-varying mediump vec3 vPosition;
+varying vec3 vPosition;
 
 uniform mat4 modelViewProjectionMatrix;
 uniform sampler2D water;

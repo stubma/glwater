@@ -10,7 +10,7 @@ precision mediump float;
 #endif
 
 attribute vec4 position;
-varying mediump vec2 coord;
+varying vec2 coord;
 
 void main() {
     coord = position.xy * 0.5 + 0.5;

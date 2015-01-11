@@ -7,7 +7,7 @@ uniform vec3 light;
 
 attribute vec4 position;
 
-varying mediump vec3 newPos;
+varying vec3 newPos;
 
 const float IOR_AIR = 1.0;
 const float IOR_WATER = 1.333;

@@ -10,7 +10,7 @@
 precision mediump float;
 #endif
 
-varying mediump vec3 vPosition;
+varying vec3 vPosition;
 
 uniform vec3 eye;
 uniform samplerCube sky;
