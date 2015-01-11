@@ -50,7 +50,7 @@
     [self.texA bindUniform:UNIFORM_NAME_WATER ofProgram:self.updateShader];
     
     UniformValue v;
-    v.v2 = GLKVector2Make(self.texA.info->width, self.texA.info->height);
+    v.v2 = GLKVector2Make(1.0f / self.texA.info->width, 1.0f / self.texA.info->height);
     [self.updateShader setUniformValue:v byName:UNIFORM_NAME_DELTA];
     
     [self.texB setAsTarget];
@@ -71,7 +71,7 @@
     [self.texA bindUniform:UNIFORM_NAME_WATER ofProgram:self.normalShader];
     
     UniformValue v;
-    v.v2 = GLKVector2Make(self.texA.info->width, self.texA.info->height);
+    v.v2 = GLKVector2Make(1.0f / self.texA.info->width, 1.0f / self.texA.info->height);
     [self.normalShader setUniformValue:v byName:UNIFORM_NAME_DELTA];
     
     [self.texB setAsTarget];

@@ -187,10 +187,10 @@
                     glUniform1f(u.location, u.value.f);
                     break;
                 case VECTOR_2:
-                    glUniform2fv(u.location, 2, u.value.v2.v);
+                    glUniform2fv(u.location, 1, u.value.v2.v);
                     break;
                 case VECTOR_3:
-                    glUniform3fv(u.location, 3, u.value.v3.v);
+                    glUniform3fv(u.location, 1, u.value.v3.v);
                     break;
                 case MATRIX_3:
                     glUniformMatrix3fv(u.location, 1, NO, u.value.m3.m);
