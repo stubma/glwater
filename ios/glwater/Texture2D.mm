@@ -94,7 +94,7 @@
 - (void)createFrameBuffer {
     glGenFramebuffers(1, &_framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, self.framebuffer);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, self.t, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, self.target, self.t, 0);
     
     glGenRenderbuffers(1, &_renderbuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, self.renderbuffer);

@@ -53,6 +53,9 @@ typedef union {
 #define UNIFORM_NAME_SPHERERADIUS @"sphereRadius"
 #define UNIFORM_NAME_DELTA @"delta"
 #define UNIFORM_NAME_UNDERWATER @"underwater"
+#define UNIFORM_NAME_STRENGTH @"strength"
+#define UNIFORM_NAME_DROPCENTER @"dropCenter"
+#define UNIFORM_NAME_DROPRADIUS @"dropRadius"
 #define UNIFORM_NORMAL_MATRIX \
     [[Uniform alloc] initWithName:UNIFORM_NAME_NORMAL_MATRIX andType:MATRIX_3]
 #define UNIFORM_MVP_MATRIX \
@@ -77,3 +80,9 @@ typedef union {
     [[Uniform alloc] initWithName:UNIFORM_NAME_DELTA andType:VECTOR_2]
 #define UNIFORM_UNDERWATER \
     [[Uniform alloc] initWithName:UNIFORM_NAME_UNDERWATER andType:BOOLEAN_TYPE]
+#define UNIFORM_STRENGTH \
+    [[Uniform alloc] initWithName:UNIFORM_NAME_STRENGTH andType:FLOAT]
+#define UNIFORM_DROPCENTER \
+    [[Uniform alloc] initWithName:UNIFORM_NAME_DROPCENTER andType:VECTOR_2]
+#define UNIFORM_DROPRADIUS \
+    [[Uniform alloc] initWithName:UNIFORM_NAME_DROPRADIUS andType:FLOAT]

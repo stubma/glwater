@@ -38,11 +38,41 @@
         self.normalShader = [[Program alloc] initWithShader:@"waterNormalShader"];
         [self.normalShader addUniform:UNIFORM_WATER];
         [self.normalShader addUniform:UNIFORM_DELTA];
+        self.dropShader = [[Program alloc] initWithShader:@"waterDropShader"];
+        [self.dropShader addUniform:UNIFORM_WATER];
+        [self.dropShader addUniform:UNIFORM_DROPCENTER];
+        [self.dropShader addUniform:UNIFORM_STRENGTH];
+        [self.dropShader addUniform:UNIFORM_DROPRADIUS];
         
         // mesh
         self.plane = [Mesh plane];
     }
     return self;
+}
+
+- (void)addDropAt:(CGPoint)pos withRadius:(float)radius andStrength:(float)strength {
+    [self.texA bind:0];
+    [self.texA bindUniform:UNIFORM_NAME_WATER ofProgram:self.dropShader];
+    
+    UniformValue v;
+    v.v2 = GLKVector2Make(pos.x, pos.y);
+    [self.dropShader setUniformValue:v byName:UNIFORM_NAME_DROPCENTER];
+    v.f = radius;
+    [self.dropShader setUniformValue:v byName:UNIFORM_NAME_DROPRADIUS];
+    v.f = strength;
+    [self.dropShader setUniformValue:v byName:UNIFORM_NAME_STRENGTH];
+    
+    [self.texB setAsTarget];
+    [self.dropShader use];
+    [self.plane draw];
+    [self.texB restoreTarget];
+    
+    [self.texA unbind:0];
+    
+    // swap
+    Texture2D* tmp = self.texA;
+    self.texA = self.texB;
+    self.texB = tmp;
 }
 
 - (void)stepSimulation {

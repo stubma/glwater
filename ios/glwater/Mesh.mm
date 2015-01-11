@@ -123,6 +123,7 @@ static GLfloat sPlaneMesh[] = {
         }
     }
     
+    // create vao, vbo, ibo
     GLuint vao, vbo, ibo;
     glGenVertexArraysOES(1, &vao);
     glBindVertexArrayOES(vao);
@@ -139,6 +140,11 @@ static GLfloat sPlaneMesh[] = {
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 12, BUFFER_OFFSET(0));
     glBindVertexArrayOES(0);
+    
+    // free
+    free(vbuf);
+    free(ibuf);
+    
     return m;
 }
 

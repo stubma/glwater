@@ -111,10 +111,10 @@
     self.angleX = -25;
     self.angleY = -200;
     self.center = self.oldCenter = GLKVector3Make(-0.4f, -0.75f, 0.2f);
-    self.radius = 0;
+    self.radius = 0.25;
     self.gravity = GLKVector3Make(0, -4, 0);
     self.velocity = GLKVector3Make(0, 0, 0);
-    self.lightDir = GLKVector3Normalize(GLKVector3Make(2.0, 2.0, -1.0));
+    self.lightDir = GLKVector3Normalize(GLKVector3Make(2.0f, 2.0f, -1.0f));
     self.tracer = [[Raytracer alloc] init];
     
     // cube shader
@@ -169,6 +169,13 @@
     // texture
     self.tiles = [[Texture2D alloc] initWithImage:@"tiles.jpg"];
     self.causticTex = [[Texture2D alloc] initWithSize:CGSizeMake(1024, 1024)];
+    
+    // add drop
+    for (int i = 0; i < 20; i++) {
+        [self.water addDropAt:CGPointMake(rand() * 2 - 1, rand() * 2 - 1)
+                   withRadius:0.03
+                  andStrength:(i & 1) ? 0.01 : -0.01];
+    }
 }
 
 - (void)tearDownGL {
