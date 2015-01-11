@@ -58,6 +58,8 @@
     [self.plane draw];
     [self.texB restoreTarget];
     
+    [self.texA unbind:0];
+    
     // swap
     Texture2D* tmp = self.texA;
     self.texA = self.texB;
@@ -76,6 +78,8 @@
     [self.normalShader use];
     [self.plane draw];
     [self.texB restoreTarget];
+    
+    [self.texA unbind:0];
     
     // swap
     Texture2D* tmp = self.texA;
