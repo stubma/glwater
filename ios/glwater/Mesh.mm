@@ -102,7 +102,7 @@ static GLfloat sPlaneMesh[] = {
     int vbufIndex = 0;
     int ibufIndex = 0;
     float* vbuf = (float*)malloc(m.vertices * sizeof(float) * 3);
-    unsigned int* ibuf = (unsigned int*)malloc(m.triangles * 3 * sizeof(unsigned int));
+    GLushort* ibuf = (GLushort*)malloc(m.triangles * 3 * sizeof(GLushort));
     for(int y = 0; y <= detailY; y++) {
         float t = (float)y / detailY;
         for (int x = 0; x <= detailX; x++) {
@@ -136,7 +136,7 @@ static GLfloat sPlaneMesh[] = {
     m.ibo = ibo;
     m.mode = GL_TRIANGLES;
     glBufferData(GL_ARRAY_BUFFER, vbufIndex * sizeof(float), vbuf, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibufIndex * sizeof(unsigned int), ibuf, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibufIndex * sizeof(GLushort), ibuf, GL_STATIC_DRAW);
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 12, BUFFER_OFFSET(0));
     glBindVertexArrayOES(0);
@@ -174,7 +174,7 @@ static GLfloat sPlaneMesh[] = {
     glBindVertexArrayOES(self.vao);
     if(self.ibo > 0) {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ibo);
-        glDrawElements(self.mode, self.triangles * 3, GL_UNSIGNED_INT, 0);
+        glDrawElements(self.mode, self.triangles * 3, GL_UNSIGNED_SHORT, 0);
     } else {
         glDrawArrays(self.mode, 0, self.vertices);
     }

@@ -21,6 +21,7 @@
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong, nonatomic) Program* cubeShader;
 @property (strong, nonatomic) Program* causticsShader;
+@property (strong, nonatomic) Program* waterShader;
 @property (strong, nonatomic) Mesh* cubeMesh;
 @property (strong, nonatomic) Mesh* waterMesh;
 @property (strong, nonatomic) TextureCube* sky;
@@ -28,7 +29,6 @@
 @property (strong, nonatomic) Texture2D* causticTex;
 @property (strong, nonatomic) Water* water;
 @property (strong, nonatomic) Raytracer* tracer;
-@property (strong, nonatomic) NSMutableArray* waterShaders;
 @property (assign, nonatomic) float angleX;
 @property (assign, nonatomic) float angleY;
 @property (assign, nonatomic) CGPoint lastLoc;
@@ -135,21 +135,17 @@
     [self.causticsShader addUniform:UNIFORM_WATER];
     
     // water shader
-    self.waterShaders = [NSMutableArray arrayWithCapacity:2];
-    for(int i = 0; i < 2; i++) {
-        Program* shader = [[Program alloc] initWithShader:@"waterShader"];
-        [shader addUniform:UNIFORM_MVP_MATRIX];
-        [shader addUniform:UNIFORM_TILES];
-        [shader addUniform:UNIFORM_SPHERECENTER];
-        [shader addUniform:UNIFORM_SPHERERADIUS];
-        [shader addUniform:UNIFORM_LIGHT];
-        [shader addUniform:UNIFORM_WATER];
-        [shader addUniform:UNIFORM_CAUSTIC];
-        [shader addUniform:UNIFORM_SKY];
-        [shader addUniform:UNIFORM_EYE];
-        [shader addUniform:UNIFORM_UNDERWATER];
-        [self.waterShaders addObject:shader];
-    }
+    self.waterShader = [[Program alloc] initWithShader:@"waterShader"];
+    [self.waterShader addUniform:UNIFORM_MVP_MATRIX];
+    [self.waterShader addUniform:UNIFORM_TILES];
+    [self.waterShader addUniform:UNIFORM_SPHERECENTER];
+    [self.waterShader addUniform:UNIFORM_SPHERERADIUS];
+    [self.waterShader addUniform:UNIFORM_LIGHT];
+    [self.waterShader addUniform:UNIFORM_WATER];
+    [self.waterShader addUniform:UNIFORM_CAUSTIC];
+    [self.waterShader addUniform:UNIFORM_SKY];
+    [self.waterShader addUniform:UNIFORM_EYE];
+    [self.waterShader addUniform:UNIFORM_UNDERWATER];
     
     // mesh
     self.cubeMesh = [Mesh cube];
@@ -243,7 +239,7 @@
     
     [self.water stepSimulation];
     [self.water stepSimulation];
-    [self.water updateNormals];
+//    [self.water updateNormals];
     [self updateCaustics];
 }
 
@@ -272,43 +268,43 @@
     glEnable(GL_CULL_FACE);
     
     [self.tracer update:self.modelViewMatrix];
-    bool underwater = false;
-    for(Program* shader in self.waterShaders) {
-        glCullFace(underwater ? GL_BACK : GL_FRONT);
-        
-        [self.water.texA bind:0];
-        [self.water.texA bindUniform:UNIFORM_NAME_WATER ofProgram:shader];
-        [self.tiles bind:1];
-        [self.tiles bindUniform:UNIFORM_NAME_TILES ofProgram:shader];
-        [self.sky bind:2];
-        [self.sky bindUniform:UNIFORM_NAME_SKY ofProgram:shader];
-        [self.causticTex bind:3];
-        [self.causticTex bindUniform:UNIFORM_NAME_CAUSTIC ofProgram:shader];
-        
-        UniformValue v;
-        v.m4 = self.modelViewProjectionMatrix;
-        [shader setUniformValue:v byName:UNIFORM_NAME_MVP_MATRIX];
-        v.v3 = self.center;
-        [shader setUniformValue:v byName:UNIFORM_NAME_SPHERECENTER];
-        v.f = self.radius;
-        [shader setUniformValue:v byName:UNIFORM_NAME_SPHERERADIUS];
-        v.v3 = self.lightDir;
-        [shader setUniformValue:v byName:UNIFORM_NAME_LIGHT];
-        v.v3 = self.tracer.eye;
-        [shader setUniformValue:v byName:UNIFORM_NAME_EYE];
+    
+    [self.water.texA bind:0];
+    [self.water.texA bindUniform:UNIFORM_NAME_WATER ofProgram:self.waterShader];
+    [self.tiles bind:1];
+    [self.tiles bindUniform:UNIFORM_NAME_TILES ofProgram:self.waterShader];
+    [self.sky bind:2];
+    [self.sky bindUniform:UNIFORM_NAME_SKY ofProgram:self.waterShader];
+    [self.causticTex bind:3];
+    [self.causticTex bindUniform:UNIFORM_NAME_CAUSTIC ofProgram:self.waterShader];
+    
+    UniformValue v;
+    v.m4 = self.modelViewProjectionMatrix;
+    [self.waterShader setUniformValue:v byName:UNIFORM_NAME_MVP_MATRIX];
+    v.v3 = self.center;
+    [self.waterShader setUniformValue:v byName:UNIFORM_NAME_SPHERECENTER];
+    v.f = self.radius;
+    [self.waterShader setUniformValue:v byName:UNIFORM_NAME_SPHERERADIUS];
+    v.v3 = self.lightDir;
+    [self.waterShader setUniformValue:v byName:UNIFORM_NAME_LIGHT];
+    v.v3 = self.tracer.eye;
+    [self.waterShader setUniformValue:v byName:UNIFORM_NAME_EYE];
+    
+    for(int i = 0; i < 2; i++) {
+        // i == 1 means underwater
+        bool underwater = i == 1;
         v.i = underwater;
-        underwater = !underwater;
-        [shader setUniformValue:v byName:UNIFORM_NAME_UNDERWATER];
+        [self.waterShader setUniformValue:v byName:UNIFORM_NAME_UNDERWATER];
         
-        [shader use];
-        
+        glCullFace(underwater ? GL_BACK : GL_FRONT);
+        [self.waterShader use];
         [self.waterMesh draw];
-        
-        [self.water.texA unbind:0];
-        [self.tiles unbind:1];
-        [self.sky unbind:2];
-        [self.causticTex unbind:3];
     }
+    
+    [self.water.texA unbind:0];
+    [self.tiles unbind:1];
+    [self.sky unbind:2];
+    [self.causticTex unbind:3];
     
     glDisable(GL_CULL_FACE);
 }
