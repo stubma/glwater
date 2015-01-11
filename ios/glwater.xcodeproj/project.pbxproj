@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		92ACC82C1A5D8187001EE6D4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 92ACC82B1A5D8187001EE6D4 /* main.m */; };
 		92ACC82F1A5D8187001EE6D4 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 92ACC82E1A5D8187001EE6D4 /* AppDelegate.mm */; };
-		92ACC8311A5D8187001EE6D4 /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 92ACC8301A5D8187001EE6D4 /* Shader.fsh */; };
-		92ACC8331A5D8187001EE6D4 /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 92ACC8321A5D8187001EE6D4 /* Shader.vsh */; };
 		92ACC8361A5D8187001EE6D4 /* GameViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 92ACC8351A5D8187001EE6D4 /* GameViewController.mm */; };
 		92ACC8391A5D8187001EE6D4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92ACC8371A5D8187001EE6D4 /* Main.storyboard */; };
 		92ACC83B1A5D8187001EE6D4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 92ACC83A1A5D8187001EE6D4 /* Images.xcassets */; };
@@ -46,8 +44,6 @@
 		92ACC82B1A5D8187001EE6D4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		92ACC82D1A5D8187001EE6D4 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		92ACC82E1A5D8187001EE6D4 /* AppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };
-		92ACC8301A5D8187001EE6D4 /* Shader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = Shader.fsh; path = Shaders/Shader.fsh; sourceTree = "<group>"; };
-		92ACC8321A5D8187001EE6D4 /* Shader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = Shader.vsh; path = Shaders/Shader.vsh; sourceTree = "<group>"; };
 		92ACC8341A5D8187001EE6D4 /* GameViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameViewController.h; sourceTree = "<group>"; };
 		92ACC8351A5D8187001EE6D4 /* GameViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GameViewController.mm; sourceTree = "<group>"; };
 		92ACC8381A5D8187001EE6D4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -121,8 +117,6 @@
 			children = (
 				92ACC82D1A5D8187001EE6D4 /* AppDelegate.h */,
 				92ACC82E1A5D8187001EE6D4 /* AppDelegate.mm */,
-				92ACC8301A5D8187001EE6D4 /* Shader.fsh */,
-				92ACC8321A5D8187001EE6D4 /* Shader.vsh */,
 				92F190DB1A5EC47F008AA456 /* cubeShader.fsh */,
 				92F190DC1A5EC47F008AA456 /* cubeShader.vsh */,
 				92B5FFEF1A612B2E003025EE /* waterNormalShader.fsh */,
@@ -250,9 +244,7 @@
 				92B5FFC31A60EF3C003025EE /* waterShader.fsh in Resources */,
 				92F190DD1A5EC47F008AA456 /* cubeShader.fsh in Resources */,
 				92ACC83B1A5D8187001EE6D4 /* Images.xcassets in Resources */,
-				92ACC8331A5D8187001EE6D4 /* Shader.vsh in Resources */,
 				92B5FFC41A60EF3C003025EE /* waterShader.vsh in Resources */,
-				92ACC8311A5D8187001EE6D4 /* Shader.fsh in Resources */,
 				92ACC85A1A5D8544001EE6D4 /* tiles.jpg in Resources */,
 				92B5FFF11A612B2E003025EE /* waterNormalShader.fsh in Resources */,
 				92B5FFF21A612B2E003025EE /* waterNormalShader.vsh in Resources */,

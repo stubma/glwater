@@ -9,7 +9,7 @@
 attribute vec4 position;
 attribute vec3 normal;
 
-varying lowp vec3 vPosition;
+varying mediump vec3 vPosition;
 
 uniform mat4 modelViewProjectionMatrix;
 uniform mat3 normalMatrix;

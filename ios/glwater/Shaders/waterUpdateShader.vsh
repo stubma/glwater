@@ -7,7 +7,7 @@
 //
 
 attribute vec4 position;
-varying lowp vec2 coord;
+varying mediump vec2 coord;
 
 void main() {
     coord = position.xy * 0.5 + 0.5;

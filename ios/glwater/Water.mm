@@ -16,15 +16,17 @@
         // check extension
         BOOL canUseFloatTexture = [LightGL isExtensionSupported:"OES_texture_float"];
         BOOL canUseHalfFloatTexture = [LightGL isExtensionSupported:"OES_texture_half_float"];
-        if(!canUseFloatTexture && !canUseHalfFloatTexture) {
-            NSLog(@"This demo requires the OES_texture_float extension");
+        BOOL canUseFloatTextureColorBuffer = [LightGL isExtensionSupported:"GL_EXT_color_buffer_float"];
+        BOOL canUseHalfFloatTextureColorBuffer = [LightGL isExtensionSupported:"GL_EXT_color_buffer_half_float"];
+        if(!((canUseFloatTexture && canUseFloatTextureColorBuffer) || (canUseHalfFloatTexture && canUseHalfFloatTextureColorBuffer))) {
+            NSLog(@"This demo requires the OES_texture_float&GL_EXT_color_buffer_float or OES_texture_half_float&GL_EXT_color_buffer_half_float extension");
         }
 
         // texture
-        if(canUseFloatTexture) {
+        if(canUseFloatTexture && canUseFloatTextureColorBuffer) {
             self.texA = [[Texture2D alloc] initWithSize:CGSizeMake(256, 256) withType:GL_FLOAT];
             self.texB = [[Texture2D alloc] initWithSize:CGSizeMake(256, 256) withType:GL_FLOAT];
-        } else if(canUseHalfFloatTexture) {
+        } else if(canUseHalfFloatTexture && canUseHalfFloatTextureColorBuffer) {
             self.texA = [[Texture2D alloc] initWithSize:CGSizeMake(256, 256) withType:GL_HALF_FLOAT_OES];
             self.texB = [[Texture2D alloc] initWithSize:CGSizeMake(256, 256) withType:GL_HALF_FLOAT_OES];
         }

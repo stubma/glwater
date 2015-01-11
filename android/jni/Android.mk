@@ -18,7 +18,8 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := game
-LOCAL_LDLIBS := -lGLESv3
+LOCAL_CFLAGS += -DGL_GLEXT_PROTOTYPES
+LOCAL_LDLIBS := -lGLESv2 -llog
 LOCAL_SRC_FILES := $(call all-cpp-files-under,.)
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 include $(BUILD_SHARED_LIBRARY)
