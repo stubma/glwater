@@ -140,11 +140,9 @@ void main() {
 //        info = texture2D(water, coord);
 //    }
     
-    gl_FragColor = vec4(info.r * 10.0, 0.0, 0.0, 1.0);
+    vec3 normal = vec3(info.b, sqrt(1.0 - dot(info.ba, info.ba)), info.a);
+    vec3 incomingRay = normalize(vPosition - eye);
     
-//    vec3 normal = vec3(info.b, sqrt(1.0 - dot(info.ba, info.ba)), info.a);
-//    vec3 incomingRay = normalize(vPosition - eye);
-//    
 //    if(underwater) {
 //        // underwater
 //        normal = -normal;
@@ -167,4 +165,6 @@ void main() {
 //        
 //        gl_FragColor = vec4(mix(refractedColor, reflectedColor, fresnel), 1.0);
 //    }
+    
+    gl_FragColor = vec4(info.r * 10.0, 0.0, 0.0, 1.0);
 }

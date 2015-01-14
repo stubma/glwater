@@ -172,14 +172,12 @@ typedef enum {
     self.causticTex = [[Texture2D alloc] initWithSize:CGSizeMake(1024, 1024)];
     
     // add drop
-    [self.water addDropAt:CGPointMake(0, 0)
-               withRadius:0.2f
-              andStrength:0.2f];
-//    for (int i = 0; i < 20; i++) {
-//        [self.water addDropAt:CGPointMake(rand() * 2 - 1, rand() * 2 - 1)
-//                   withRadius:0.03
-//                  andStrength:(i & 1) ? 0.01 : -0.01];
-//    }
+    srand(0);
+    for (int i = 0; i < 20; i++) {
+        [self.water addDropAt:CGPointMake((float)rand() / RAND_MAX * 2 - 1, (float)rand() / RAND_MAX * 2 - 1)
+                   withRadius:0.03
+                  andStrength:(i & 1) ? 0.04 : -0.04];
+    }
 }
 
 - (void)tearDownGL {
