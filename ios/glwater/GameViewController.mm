@@ -16,6 +16,12 @@
 #import "LightGL.h"
 #import "Raytracer.h"
 
+typedef enum {
+    MODE_MOVE_SPHERE,
+    MODE_ADD_DROPS,
+    MODE_ORBIT_CAMERA
+} DragMode;
+
 @interface GameViewController ()
 
 @property (strong, nonatomic) EAGLContext *context;
@@ -31,17 +37,14 @@
 @property (strong, nonatomic) Raytracer* tracer;
 @property (assign, nonatomic) float angleX;
 @property (assign, nonatomic) float angleY;
-@property (assign, nonatomic) CGPoint lastLoc;
-@property (assign, nonatomic) GLKMatrix4 projectionMatrix;
-@property (assign, nonatomic) GLKMatrix3 normalMatrix;
-@property (assign, nonatomic) GLKMatrix4 modelViewMatrix;
-@property (assign, nonatomic) GLKMatrix4 modelViewProjectionMatrix;
+@property (assign, nonatomic) GLKVector2 lastLoc;
 @property (assign, nonatomic) GLKVector3 center;
 @property (assign, nonatomic) GLKVector3 oldCenter;
 @property (assign, nonatomic) GLKVector3 velocity;
 @property (assign, nonatomic) GLKVector3 gravity;
 @property (assign, nonatomic) float radius;
 @property (assign, nonatomic) GLKVector3 lightDir;
+@property (assign, nonatomic) DragMode mode;
 
 - (void)setupGL;
 - (void)tearDownGL;
@@ -49,6 +52,8 @@
 - (void)renderCube;
 - (void)renderWater;
 - (void)renderSphere;
+- (GLKVector2)cg2glk:(CGPoint)loc;
+- (GLKVector2)toGL:(GLKVector2)loc;
 
 @end
 
@@ -167,29 +172,68 @@
     self.causticTex = [[Texture2D alloc] initWithSize:CGSizeMake(1024, 1024)];
     
     // add drop
-    for (int i = 0; i < 20; i++) {
-        [self.water addDropAt:CGPointMake(rand() * 2 - 1, rand() * 2 - 1)
-                   withRadius:0.03
-                  andStrength:(i & 1) ? 0.01 : -0.01];
-    }
+    [self.water addDropAt:CGPointMake(0, 0)
+               withRadius:0.2f
+              andStrength:0.2f];
+//    for (int i = 0; i < 20; i++) {
+//        [self.water addDropAt:CGPointMake(rand() * 2 - 1, rand() * 2 - 1)
+//                   withRadius:0.03
+//                  andStrength:(i & 1) ? 0.01 : -0.01];
+//    }
 }
 
 - (void)tearDownGL {
     [EAGLContext setCurrentContext:self.context];
 }
 
+- (GLKVector2)cg2glk:(CGPoint)loc {
+    return GLKVector2Make(loc.x, loc.y);
+}
+
+- (GLKVector2)toGL:(GLKVector2)loc {
+    float factor = [self.view contentScaleFactor];
+    loc = GLKVector2MultiplyScalar(loc, factor);
+    loc.y = self.view.bounds.size.height * factor - loc.y;
+    return loc;
+}
+
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     UITouch* touch = touches.anyObject;
-    self.lastLoc = [touch locationInView:self.view];
+    self.lastLoc = [self cg2glk:[touch locationInView:self.view]];
+    [self.tracer update:self];
+    GLKVector3 ray = [self.tracer getRayForPixel:[self toGL:self.lastLoc]];
+    GLKVector3 pointOnPlane = GLKVector3Add(self.tracer.eye, GLKVector3MultiplyScalar(ray, -self.tracer.eye.y / ray.y));
+    if(false) {
+        // TODO
+        self.mode = MODE_MOVE_SPHERE;
+    } else if(fabs(pointOnPlane.x) < 1 && fabs(pointOnPlane.z) < 1) {
+        self.mode = MODE_ADD_DROPS;
+    } else {
+        self.mode = MODE_ORBIT_CAMERA;
+    }
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     UITouch* touch = touches.anyObject;
     CGPoint loc = [touch locationInView:self.view];
-    self.angleY -= loc.x - self.lastLoc.x;
-    self.angleX -= loc.y - self.lastLoc.y;
-    self.angleX = MAX(-89.999, MIN(89.999, self.angleX));
-    self.lastLoc = loc;
+    switch (self.mode) {
+        case MODE_ORBIT_CAMERA:
+            self.angleY -= loc.x - self.lastLoc.x;
+            self.angleX -= loc.y - self.lastLoc.y;
+            self.angleX = MAX(-89.999, MIN(89.999, self.angleX));
+            break;
+        case MODE_ADD_DROPS:
+        {
+            [self.tracer update:self];
+            GLKVector3 ray = [self.tracer getRayForPixel:[self toGL:self.lastLoc]];
+            GLKVector3 pointOnPlane = GLKVector3Add(self.tracer.eye, GLKVector3MultiplyScalar(ray, -self.tracer.eye.y / ray.y));
+            [self.water addDropAt:CGPointMake(pointOnPlane.x, pointOnPlane.z) withRadius:0.03f andStrength:0.01f];
+            break;
+        }
+        default:
+            break;
+    }
+    self.lastLoc = [self cg2glk:loc];
     
 //    float theta = GLKMathDegreesToRadians(90 - self.angleY);
 //    float phi = GLKMathDegreesToRadians(-self.angleX);
@@ -239,7 +283,7 @@
     
     [self.water stepSimulation];
     [self.water stepSimulation];
-//    [self.water updateNormals];
+    [self.water updateNormals];
 //    [self updateCaustics];
 }
 
@@ -267,7 +311,7 @@
 - (void)renderWater {
     glEnable(GL_CULL_FACE);
     
-    [self.tracer update:self.modelViewMatrix];
+    [self.tracer update:self];
     
     [self.water.texA bind:0];
     [self.water.texA bindUniform:UNIFORM_NAME_WATER ofProgram:self.waterShader];

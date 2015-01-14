@@ -9,9 +9,12 @@
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
 
+@class GameViewController;
+
 @interface Raytracer : NSObject
 
-- (void)update:(GLKMatrix4)modelviewMatrix;
+- (void)update:(GameViewController*)renderer;
+- (GLKVector3)getRayForPixel:(GLKVector2)screenPoint;
 
 @property (assign, nonatomic) GLKVector3 eye;
 @property (assign, nonatomic) GLKVector3 ray00;

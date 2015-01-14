@@ -9,6 +9,7 @@
 #import "Texture2D.h"
 #import <OpenGLES/ES2/gl.h>
 #import <OpenGLES/ES2/glext.h>
+#import "ieeehalfprecision.h"
 
 @interface Texture2D ()
 
@@ -121,8 +122,26 @@
     glBindFramebuffer(GL_FRAMEBUFFER, self.framebuffer);
     glViewport(0, 0, self.info->width, self.info->height);
     
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+- (void)printData {
+    int pixels = self.info->width * self.info->height;
+    uint8_t* hfbuffer = new uint8_t[pixels * 8];
+    glReadPixels(0, 0, self.info->width, self.info->height, GL_RGBA, GL_HALF_FLOAT_OES, hfbuffer);
+    float* fbuffer = new float[pixels * 4];
+    halfp2singles(fbuffer, hfbuffer, pixels * 4);
+    int y = 127;
+    int x = 127;
+    int i = x + y * self.info->width;
+    NSLog(@"(%d:%d): r: %f, g: %f, b: %f, a: %f", y, x, fbuffer[i * 4], fbuffer[i * 4 + 1], fbuffer[i * 4 + 2], fbuffer[i * 4 + 3]);
+//    for(int y = 0; y < self.info->height; y += 32) {
+//        for(int x = 0; x < self.info->width; x += 32) {
+//            int i = x + y * self.info->width;
+//            NSLog(@"(%d:%d): r: %f, g: %f, b: %f, a: %f", y, x, fbuffer[i * 4], fbuffer[i * 4 + 1], fbuffer[i * 4 + 2], fbuffer[i * 4 + 3]);
+//        }
+//    }
 }
 
 - (void)restoreTarget {

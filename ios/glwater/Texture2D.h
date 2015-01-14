@@ -15,5 +15,6 @@
 - (id)initWithSize:(CGSize)size withType:(GLenum)type;
 - (void)setAsTarget;
 - (void)restoreTarget;
+- (void)printData;
 
 @end

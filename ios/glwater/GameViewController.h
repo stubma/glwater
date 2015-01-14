@@ -11,4 +11,9 @@
 
 @interface GameViewController : GLKViewController
 
+@property (assign, nonatomic) GLKMatrix4 projectionMatrix;
+@property (assign, nonatomic) GLKMatrix3 normalMatrix;
+@property (assign, nonatomic) GLKMatrix4 modelViewMatrix;
+@property (assign, nonatomic) GLKMatrix4 modelViewProjectionMatrix;
+
 @end

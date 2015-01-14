@@ -21,6 +21,7 @@ void main() {
     /* calculate average neighbor height */
     vec2 dx = vec2(delta.x, 0.0);
     vec2 dy = vec2(0.0, delta.y);
+    
     float average = (
                      texture2D(water, coord - dx).r +
                      texture2D(water, coord - dy).r +

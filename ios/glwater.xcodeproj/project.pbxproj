@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		927C12A51A6699480066382C /* ieeehalfprecision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 927C12A41A6699480066382C /* ieeehalfprecision.cpp */; };
+		927C12A81A66AF340066382C /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 927C12A71A66AF340066382C /* OpenGLES.framework */; };
 		92ACC82C1A5D8187001EE6D4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 92ACC82B1A5D8187001EE6D4 /* main.m */; };
 		92ACC82F1A5D8187001EE6D4 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 92ACC82E1A5D8187001EE6D4 /* AppDelegate.mm */; };
 		92ACC8361A5D8187001EE6D4 /* GameViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 92ACC8351A5D8187001EE6D4 /* GameViewController.mm */; };
@@ -44,6 +46,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		927C12A41A6699480066382C /* ieeehalfprecision.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ieeehalfprecision.cpp; sourceTree = "<group>"; };
+		927C12A61A6699760066382C /* ieeehalfprecision.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ieeehalfprecision.h; sourceTree = "<group>"; };
+		927C12A71A66AF340066382C /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		92ACC8261A5D8187001EE6D4 /* glwater.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = glwater.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		92ACC82A1A5D8187001EE6D4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		92ACC82B1A5D8187001EE6D4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -98,6 +103,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				927C12A81A66AF340066382C /* OpenGLES.framework in Frameworks */,
 				92ACC8631A5D89A3001EE6D4 /* GLKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -108,6 +114,7 @@
 		92ACC81D1A5D8187001EE6D4 = {
 			isa = PBXGroup;
 			children = (
+				927C12A71A66AF340066382C /* OpenGLES.framework */,
 				92ACC8621A5D89A3001EE6D4 /* GLKit.framework */,
 				92ACC8281A5D8187001EE6D4 /* glwater */,
 				92ACC8531A5D8544001EE6D4 /* Resources */,
@@ -140,6 +147,8 @@
 				92B5FFC21A60EF3C003025EE /* waterShader.vsh */,
 				92AE00221A627EAE001C6F8C /* causticsShader.fsh */,
 				92AE00201A627E02001C6F8C /* causticsShader.vsh */,
+				927C12A61A6699760066382C /* ieeehalfprecision.h */,
+				927C12A41A6699480066382C /* ieeehalfprecision.cpp */,
 				92ACC8341A5D8187001EE6D4 /* GameViewController.h */,
 				92ACC8351A5D8187001EE6D4 /* GameViewController.mm */,
 				92AE001D1A62789E001C6F8C /* Raytracer.h */,
@@ -289,6 +298,7 @@
 				92AE001F1A62789E001C6F8C /* Raytracer.mm in Sources */,
 				92B5FFD81A610409003025EE /* Texture2D.mm in Sources */,
 				92B5FFE11A610AA6003025EE /* Water.mm in Sources */,
+				927C12A51A6699480066382C /* ieeehalfprecision.cpp in Sources */,
 				92ACC82C1A5D8187001EE6D4 /* main.m in Sources */,
 				92B5FFD51A6103F5003025EE /* Texture.mm in Sources */,
 			);

@@ -76,14 +76,13 @@
 }
 
 - (void)stepSimulation {
-    [self.texA bind:0];
-    [self.texA bindUniform:UNIFORM_NAME_WATER ofProgram:self.updateShader];
-    
     UniformValue v;
     v.v2 = GLKVector2Make(1.0f / self.texA.info->width, 1.0f / self.texA.info->height);
     [self.updateShader setUniformValue:v byName:UNIFORM_NAME_DELTA];
     
     [self.texB setAsTarget];
+    [self.texA bind:0];
+    [self.texA bindUniform:UNIFORM_NAME_WATER ofProgram:self.updateShader];
     [self.updateShader use];
     [self.plane draw];
     [self.texB restoreTarget];
@@ -97,14 +96,13 @@
 }
 
 - (void)updateNormals {
-    [self.texA bind:0];
-    [self.texA bindUniform:UNIFORM_NAME_WATER ofProgram:self.normalShader];
-    
     UniformValue v;
     v.v2 = GLKVector2Make(1.0f / self.texA.info->width, 1.0f / self.texA.info->height);
     [self.normalShader setUniformValue:v byName:UNIFORM_NAME_DELTA];
     
     [self.texB setAsTarget];
+    [self.texA bind:0];
+    [self.texA bindUniform:UNIFORM_NAME_WATER ofProgram:self.normalShader];
     [self.normalShader use];
     [self.plane draw];
     [self.texB restoreTarget];
