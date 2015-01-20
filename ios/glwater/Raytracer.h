@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
+#import "HitTest.h"
 
 @class GameViewController;
 
@@ -15,6 +16,7 @@
 
 - (void)update:(GameViewController*)renderer;
 - (GLKVector3)getRayForPixel:(GLKVector2)screenPoint;
+- (HitTest*)hitTestSphere:(GLKVector3)origin ray:(GLKVector3)ray center:(GLKVector3)center radius:(float)radius;
 
 @property (assign, nonatomic) GLKVector3 eye;
 @property (assign, nonatomic) GLKVector3 ray00;

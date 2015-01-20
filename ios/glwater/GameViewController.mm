@@ -17,9 +17,10 @@
 #import "Raytracer.h"
 
 typedef enum {
+    MODE_NONE,
     MODE_MOVE_SPHERE,
     MODE_ADD_DROPS,
-    MODE_ORBIT_CAMERA
+    MODE_ORBIT_CAMERA,
 } DragMode;
 
 @interface GameViewController ()
@@ -47,6 +48,9 @@ typedef enum {
 @property (assign, nonatomic) float radius;
 @property (assign, nonatomic) GLKVector3 lightDir;
 @property (assign, nonatomic) DragMode mode;
+@property (assign, nonatomic) GLKVector3 prevHit;
+@property (assign, nonatomic) GLKVector3 planeNormal;
+@property (assign, nonatomic) NSTimeInterval prevTime;
 
 - (void)setupGL;
 - (void)tearDownGL;
@@ -123,6 +127,8 @@ typedef enum {
     self.velocity = GLKVector3Make(0, 0, 0);
     self.lightDir = GLKVector3Normalize(GLKVector3Make(2.0f, 2.0f, -1.0f));
     self.tracer = [[Raytracer alloc] init];
+    self.prevTime = [NSDate timeIntervalSinceReferenceDate];
+    self.mode = MODE_NONE;
     
     // cube shader
     self.cubeShader = [[Program alloc] initWithShader:@"cubeShader"];
@@ -213,9 +219,20 @@ typedef enum {
     [self.tracer update:self];
     GLKVector3 ray = [self.tracer getRayForPixel:[self toGL:self.lastLoc]];
     GLKVector3 pointOnPlane = GLKVector3Add(self.tracer.eye, GLKVector3MultiplyScalar(ray, -self.tracer.eye.y / ray.y));
-    if(false) {
-        // TODO
+    HitTest* sphereHitTest = [self.tracer hitTestSphere:self.tracer.eye
+                                                    ray:ray
+                                                 center:self.center
+                                                 radius:self.radius];
+    if(sphereHitTest) {
+        // clear sphere velocity
+        self.velocity = GLKVector3Make(0, 0, 0);
+        
+        // get hit
+        float factor = [self.view contentScaleFactor];
+        self.prevHit = sphereHitTest.hit;
         self.mode = MODE_MOVE_SPHERE;
+        self.planeNormal = [self.tracer getRayForPixel:GLKVector2Make(self.view.bounds.size.width * factor / 2, self.view.bounds.size.height * factor / 2)];
+        self.planeNormal = GLKVector3Negate(self.planeNormal);
     } else if(fabs(pointOnPlane.x) < 1 && fabs(pointOnPlane.z) < 1) {
         self.mode = MODE_ADD_DROPS;
     } else {
@@ -225,8 +242,23 @@ typedef enum {
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     UITouch* touch = touches.anyObject;
-    CGPoint loc = [touch locationInView:self.view];
+    GLKVector2 loc = [self cg2glk:[touch locationInView:self.view]];
+    GLKVector2 glLoc = [self toGL:loc];
     switch (self.mode) {
+        case MODE_MOVE_SPHERE:
+        {
+            // calculate hit
+            [self.tracer update:self];
+            GLKVector3 ray = [self.tracer getRayForPixel:GLKVector2Make(glLoc.x, glLoc.y)];
+            float t = -GLKVector3DotProduct(self.planeNormal, GLKVector3Subtract([self.tracer eye], self.prevHit)) / GLKVector3DotProduct(self.planeNormal, ray);
+            GLKVector3 nextHit = GLKVector3Add([self.tracer eye], GLKVector3MultiplyScalar(ray, t));
+            self.center = GLKVector3Add(self.center, GLKVector3Subtract(nextHit, self.prevHit));
+            self.center = GLKVector3Make(MAX(self.radius - 1, MIN(1 - self.radius, self.center.x)),
+                                         MAX(self.radius - 1, MIN(10, self.center.y)),
+                                         MAX(self.radius - 1, MIN(1 - self.radius, self.center.z)));
+            self.prevHit = nextHit;
+            break;
+        }
         case MODE_ORBIT_CAMERA:
             self.angleY -= loc.x - self.lastLoc.x;
             self.angleX -= loc.y - self.lastLoc.y;
@@ -243,11 +275,15 @@ typedef enum {
         default:
             break;
     }
-    self.lastLoc = [self cg2glk:loc];
+    self.lastLoc = loc;
     
 //    float theta = GLKMathDegreesToRadians(90 - self.angleY);
 //    float phi = GLKMathDegreesToRadians(-self.angleX);
 //    self.lightDir = GLKVector3Make(cosf(theta) * cosf(phi), sinf(phi), sinf(theta) * cosf(phi));
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+    self.mode = MODE_NONE;
 }
 
 - (void)updateCaustics {
@@ -272,6 +308,10 @@ typedef enum {
 }
 
 - (void)update {
+    NSTimeInterval now = [NSDate timeIntervalSinceReferenceDate];
+    float seconds = now - self.prevTime;
+    self.prevTime = now;
+    
     // update normal matrix and mvp matrix
     self.modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
     self.modelViewMatrix = GLKMatrix4Rotate(self.modelViewMatrix, GLKMathDegreesToRadians(-self.angleX), 1, 0, 0);
@@ -280,16 +320,22 @@ typedef enum {
     self.normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(self.modelViewMatrix), NULL);
     self.modelViewProjectionMatrix = GLKMatrix4Multiply(self.projectionMatrix, self.modelViewMatrix);
     
-    // update cube shader uniform
-    UniformValue v;
-    v.m4 = self.modelViewProjectionMatrix;
-    [self.cubeShader setUniformValue:v byName:UNIFORM_NAME_MVP_MATRIX];
-    v.v3 = self.center;
-    [self.cubeShader setUniformValue:v byName:UNIFORM_NAME_SPHERECENTER];
-    v.f = self.radius;
-    [self.cubeShader setUniformValue:v byName:UNIFORM_NAME_SPHERERADIUS];
-    v.v3 = self.lightDir;
-    [self.cubeShader setUniformValue:v byName:UNIFORM_NAME_LIGHT];
+    // update sphere
+    if(self.mode != MODE_MOVE_SPHERE) {
+        // Fall down with viscosity under water
+        float percentUnderWater = MAX(0, MIN(1, (self.radius - self.center.y) / (2 * self.radius)));
+        self.velocity = GLKVector3Add(self.velocity, GLKVector3MultiplyScalar(self.gravity, seconds - 1.1f * seconds * percentUnderWater));
+        self.velocity = GLKVector3Subtract(self.velocity, GLKVector3MultiplyScalar(GLKVector3Normalize(self.velocity), percentUnderWater * seconds * GLKVector3DotProduct(self.velocity, self.velocity)));
+        self.center = GLKVector3Add(self.center, GLKVector3MultiplyScalar(self.velocity, seconds));
+        
+        // Bounce off the bottom
+        if (self.center.y < self.radius - 1) {
+            self.center = GLKVector3Make(self.center.x, self.radius - 1, self.center.z);
+            self.velocity = GLKVector3Make(self.velocity.x, fabs(self.velocity.y) * 0.7f, self.velocity.z);
+        }
+    }
+    [self.water moveSphere:self.oldCenter center:self.center radius:self.radius];
+    self.oldCenter = self.center;
     
     [self.water stepSimulation];
     [self.water stepSimulation];
@@ -307,8 +353,18 @@ typedef enum {
     [self.causticTex bind:2];
     [self.causticTex bindUniform:UNIFORM_NAME_CAUSTIC ofProgram:self.cubeShader];
     
-    [self.cubeShader use];
+    // update cube shader uniform
+    UniformValue v;
+    v.m4 = self.modelViewProjectionMatrix;
+    [self.cubeShader setUniformValue:v byName:UNIFORM_NAME_MVP_MATRIX];
+    v.v3 = self.center;
+    [self.cubeShader setUniformValue:v byName:UNIFORM_NAME_SPHERECENTER];
+    v.f = self.radius;
+    [self.cubeShader setUniformValue:v byName:UNIFORM_NAME_SPHERERADIUS];
+    v.v3 = self.lightDir;
+    [self.cubeShader setUniformValue:v byName:UNIFORM_NAME_LIGHT];
     
+    [self.cubeShader use];
     [self.cubeMesh draw];
     
     [self.water.texA unbind:0];

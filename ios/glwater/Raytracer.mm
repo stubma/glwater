@@ -48,4 +48,21 @@
     return GLKVector3Normalize(GLKVector3Lerp(ray0, ray1, y));
 }
 
+- (HitTest*)hitTestSphere:(GLKVector3)origin ray:(GLKVector3)ray center:(GLKVector3)center radius:(float)radius {
+    GLKVector3 offset = GLKVector3Subtract(origin, center);
+    float a = GLKVector3DotProduct(ray, ray);
+    float b = 2 * GLKVector3DotProduct(ray, offset);
+    float c = GLKVector3DotProduct(offset, offset) - radius * radius;
+    float discriminant = b * b - 4 * a * c;
+    if (discriminant > 0) {
+        float t = (-b - sqrtf(discriminant)) / (2 * a);
+        GLKVector3 hit = GLKVector3Add(origin, GLKVector3MultiplyScalar(ray, t));
+        return [[HitTest alloc] initWithHit:t
+                                        hit:hit
+                                     normal:GLKVector3DivideScalar(GLKVector3Subtract(hit, center), radius)];
+    }
+    
+    return nil;
+}
+
 @end

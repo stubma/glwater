@@ -43,6 +43,11 @@
         [self.dropShader addUniform:UNIFORM_DROPCENTER];
         [self.dropShader addUniform:UNIFORM_STRENGTH];
         [self.dropShader addUniform:UNIFORM_DROPRADIUS];
+        self.sphereShader = [[Program alloc] initWithShader:@"waterSphereShader"];
+        [self.sphereShader addUniform:UNIFORM_WATER];
+        [self.sphereShader addUniform:UNIFORM_NEWCENTER];
+        [self.sphereShader addUniform:UNIFORM_OLDCENTER];
+        [self.sphereShader addUniform:UNIFORM_SPHERERADIUS];
         
         // mesh
         self.plane = [Mesh plane];
@@ -107,6 +112,29 @@
     [self.plane draw];
     [self.texB restoreTarget];
     
+    [self.texA unbind:0];
+    
+    // swap
+    Texture2D* tmp = self.texA;
+    self.texA = self.texB;
+    self.texB = tmp;
+}
+
+- (void)moveSphere:(GLKVector3)oldCenter center:(GLKVector3)center radius:(float)radius {
+    UniformValue v;
+    v.v3 = oldCenter;
+    [self.sphereShader setUniformValue:v byName:UNIFORM_NAME_OLDCENTER];
+    v.v3 = center;
+    [self.sphereShader setUniformValue:v byName:UNIFORM_NAME_NEWCENTER];
+    v.f = radius;
+    [self.sphereShader setUniformValue:v byName:UNIFORM_NAME_SPHERERADIUS];
+    
+    [self.texB setAsTarget];
+    [self.texA bind:0];
+    [self.texA bindUniform:UNIFORM_NAME_WATER ofProgram:self.sphereShader];
+    [self.sphereShader use];
+    [self.plane draw];
+    [self.texB restoreTarget];
     [self.texA unbind:0];
     
     // swap

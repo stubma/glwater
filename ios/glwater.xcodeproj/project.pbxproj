@@ -12,6 +12,9 @@
 		92823F171A6E8F940099806D /* Indexer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 92823F161A6E8F940099806D /* Indexer.mm */; };
 		92823F191A6E95E60099806D /* sphereShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 92823F181A6E95E60099806D /* sphereShader.vsh */; };
 		92823F1B1A6E95F30099806D /* sphereShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 92823F1A1A6E95F30099806D /* sphereShader.fsh */; };
+		92823F1E1A6E9AB20099806D /* HitTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 92823F1D1A6E9AB20099806D /* HitTest.mm */; };
+		92823F201A6EA7290099806D /* waterSphereShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 92823F1F1A6EA7290099806D /* waterSphereShader.vsh */; };
+		92823F221A6EA7370099806D /* waterSphereShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 92823F211A6EA7370099806D /* waterSphereShader.fsh */; };
 		92ACC82C1A5D8187001EE6D4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 92ACC82B1A5D8187001EE6D4 /* main.m */; };
 		92ACC82F1A5D8187001EE6D4 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 92ACC82E1A5D8187001EE6D4 /* AppDelegate.mm */; };
 		92ACC8361A5D8187001EE6D4 /* GameViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 92ACC8351A5D8187001EE6D4 /* GameViewController.mm */; };
@@ -56,6 +59,10 @@
 		92823F161A6E8F940099806D /* Indexer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Indexer.mm; sourceTree = "<group>"; };
 		92823F181A6E95E60099806D /* sphereShader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = sphereShader.vsh; path = Shaders/sphereShader.vsh; sourceTree = "<group>"; };
 		92823F1A1A6E95F30099806D /* sphereShader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = sphereShader.fsh; path = Shaders/sphereShader.fsh; sourceTree = "<group>"; };
+		92823F1C1A6E9AB20099806D /* HitTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HitTest.h; sourceTree = "<group>"; };
+		92823F1D1A6E9AB20099806D /* HitTest.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HitTest.mm; sourceTree = "<group>"; };
+		92823F1F1A6EA7290099806D /* waterSphereShader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = waterSphereShader.vsh; path = Shaders/waterSphereShader.vsh; sourceTree = "<group>"; };
+		92823F211A6EA7370099806D /* waterSphereShader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = waterSphereShader.fsh; path = Shaders/waterSphereShader.fsh; sourceTree = "<group>"; };
 		92ACC8261A5D8187001EE6D4 /* glwater.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = glwater.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		92ACC82A1A5D8187001EE6D4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		92ACC82B1A5D8187001EE6D4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -150,6 +157,8 @@
 				92B5FFEC1A612962003025EE /* waterUpdateShader.vsh */,
 				92AE00261A629D02001C6F8C /* waterDropShader.fsh */,
 				92AE00241A629CF6001C6F8C /* waterDropShader.vsh */,
+				92823F211A6EA7370099806D /* waterSphereShader.fsh */,
+				92823F1F1A6EA7290099806D /* waterSphereShader.vsh */,
 				92B5FFC11A60EF3C003025EE /* waterShader.fsh */,
 				92B5FFC21A60EF3C003025EE /* waterShader.vsh */,
 				92823F1A1A6E95F30099806D /* sphereShader.fsh */,
@@ -162,6 +171,8 @@
 				92ACC8351A5D8187001EE6D4 /* GameViewController.mm */,
 				92AE001D1A62789E001C6F8C /* Raytracer.h */,
 				92AE001E1A62789E001C6F8C /* Raytracer.mm */,
+				92823F1C1A6E9AB20099806D /* HitTest.h */,
+				92823F1D1A6E9AB20099806D /* HitTest.mm */,
 				92B5FFE21A610B4D003025EE /* LightGL.h */,
 				92B5FFE31A610B4D003025EE /* LightGL.mm */,
 				92B5FFCD1A60F61B003025EE /* Uniform.h */,
@@ -273,6 +284,8 @@
 				92ACC85E1A5D8544001EE6D4 /* zneg.jpg in Resources */,
 				92823F191A6E95E60099806D /* sphereShader.vsh in Resources */,
 				92ACC85C1A5D8544001EE6D4 /* xpos.jpg in Resources */,
+				92823F221A6EA7370099806D /* waterSphereShader.fsh in Resources */,
+				92823F201A6EA7290099806D /* waterSphereShader.vsh in Resources */,
 				92ACC85B1A5D8544001EE6D4 /* xneg.jpg in Resources */,
 				92823F1B1A6E95F30099806D /* sphereShader.fsh in Resources */,
 				92B5FFEE1A612962003025EE /* waterUpdateShader.vsh in Resources */,
@@ -303,6 +316,7 @@
 			files = (
 				92B5FFE71A610F4F003025EE /* Mesh.mm in Sources */,
 				92823F171A6E8F940099806D /* Indexer.mm in Sources */,
+				92823F1E1A6E9AB20099806D /* HitTest.mm in Sources */,
 				92B5FFCC1A60F273003025EE /* Program.mm in Sources */,
 				92ACC82F1A5D8187001EE6D4 /* AppDelegate.mm in Sources */,
 				92ACC8361A5D8187001EE6D4 /* GameViewController.mm in Sources */,
