@@ -15,6 +15,7 @@
 + (Mesh*)plane;
 + (Mesh*)plane:(int)detail;
 + (Mesh*)sphere;
++ (Mesh*)sphere:(int)detail;
 
 - (void)draw;
 

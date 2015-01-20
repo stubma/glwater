@@ -8,6 +8,10 @@
 
 #import "Mesh.h"
 #import <OpenGLES/ES2/glext.h>
+#import <vector>
+#import "Indexer.h"
+
+using namespace std;
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -54,6 +58,13 @@ static const GLfloat sCubeMesh[] = {
     -1.0f, -1.0f, -1.0f,
     -1.0f, 1.0f, -1.0f,
 };
+
+@interface Mesh ()
+
++ (GLKVector3)pickOctant:(int)i;
++ (float)fix:(float)x;
+
+@end
 
 @implementation Mesh
 
@@ -126,8 +137,98 @@ static const GLfloat sCubeMesh[] = {
     return m;
 }
 
++ (GLKVector3)pickOctant:(int)i {
+    return GLKVector3Make((i & 1) * 2 - 1, (i & 2) - 1, (i & 4) / 2 - 1);
+}
+
++ (float)fix:(float)x {
+    return x + (x - x * x) / 2;
+}
+
 + (Mesh*)sphere {
-    return nil;
+    return [Mesh sphere:6];
+}
+
++ (Mesh*)sphere:(int)detail {
+    Mesh* m = [[Mesh alloc] init];
+    Indexer* indexer = [[Indexer alloc] init];
+    
+    vector<int> ivec;
+    for (int octant = 0; octant < 8; octant++) {
+        GLKVector3 scale = [self pickOctant:octant];
+        BOOL flip = scale.x * scale.y * scale.z > 0;
+        [indexer clearIndices];
+        for (int i = 0; i <= detail; i++) {
+            // Generate a row of vertices on the surface of the sphere
+            // using barycentric coordinates.
+            for (int j = 0; i + j <= detail; j++) {
+                float a = (float)i / detail;
+                float b = (float)j / detail;
+                float c = (float)(detail - i - j) / detail;
+                GLKVector3 v = GLKVector3Make([self fix:a], [self fix:b], [self fix:c]);
+                v = GLKVector3Normalize(v);
+                v = GLKVector3Multiply(v, scale);
+                [indexer add:v];
+            }
+            
+            // Generate triangles from this row and the previous row.
+            if (i > 0) {
+                for (int j = 0; i + j <= detail; j++) {
+                    int a = (i - 1) * (detail + 1) + ((i - 1) - (i - 1) * (i - 1)) / 2 + j;
+                    int b = i * (detail + 1) + (i - i * i) / 2 + j;
+                    if(flip) {
+                        ivec.push_back([indexer indexAt:a]);
+                        ivec.push_back([indexer indexAt:b]);
+                        ivec.push_back([indexer indexAt:a + 1]);
+                    } else {
+                        ivec.push_back([indexer indexAt:a]);
+                        ivec.push_back([indexer indexAt:a + 1]);
+                        ivec.push_back([indexer indexAt:b]);
+                    }
+                    if (i + j < detail) {
+                        if(flip) {
+                            ivec.push_back([indexer indexAt:b]);
+                            ivec.push_back([indexer indexAt:b + 1]);
+                            ivec.push_back([indexer indexAt:a + 1]);
+                        } else {
+                            ivec.push_back([indexer indexAt:b]);
+                            ivec.push_back([indexer indexAt:a + 1]);
+                            ivec.push_back([indexer indexAt:b + 1]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // get buffer
+    float* vbuf = [indexer createVBuf];
+    GLushort* ibuf = (GLushort*)malloc(ivec.size() * sizeof(GLushort));
+    GLushort* tmp = ibuf;
+    for(vector<int>::iterator iter = ivec.begin(); iter != ivec.end(); iter++) {
+        *tmp = *iter;
+        tmp++;
+    }
+    
+    // create vao, vbo, ibo
+    GLuint vbo, ibo;
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glGenBuffers(1, &ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    m.vbo = vbo;
+    m.ibo = ibo;
+    m.triangles = ivec.size() / 3;
+    m.vertices = [indexer vertexCount];
+    m.mode = GL_TRIANGLES;
+    glBufferData(GL_ARRAY_BUFFER, m.vertices * sizeof(GLKVector3), vbuf, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ivec.size() * sizeof(GLushort), ibuf, GL_STATIC_DRAW);
+    
+    // free
+    free(vbuf);
+    free(ibuf);
+    
+    return m;
 }
 
 - (id)init {

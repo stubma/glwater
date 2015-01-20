@@ -28,8 +28,10 @@ typedef enum {
 @property (strong, nonatomic) Program* cubeShader;
 @property (strong, nonatomic) Program* causticsShader;
 @property (strong, nonatomic) Program* waterShader;
+@property (strong, nonatomic) Program* sphereShader;
 @property (strong, nonatomic) Mesh* cubeMesh;
 @property (strong, nonatomic) Mesh* waterMesh;
+@property (strong, nonatomic) Mesh* sphereMesh;
 @property (strong, nonatomic) TextureCube* sky;
 @property (strong, nonatomic) Texture2D* tiles;
 @property (strong, nonatomic) Texture2D* causticTex;
@@ -152,9 +154,19 @@ typedef enum {
     [self.waterShader addUniform:UNIFORM_EYE];
     [self.waterShader addUniform:UNIFORM_UNDERWATER];
     
+    // sphere shader
+    self.sphereShader = [[Program alloc] initWithShader:@"sphereShader"];
+    [self.sphereShader addUniform:UNIFORM_MVP_MATRIX];
+    [self.sphereShader addUniform:UNIFORM_SPHERECENTER];
+    [self.sphereShader addUniform:UNIFORM_SPHERERADIUS];
+    [self.sphereShader addUniform:UNIFORM_LIGHT];
+    [self.sphereShader addUniform:UNIFORM_WATER];
+    [self.sphereShader addUniform:UNIFORM_CAUSTIC];
+    
     // mesh
     self.cubeMesh = [Mesh cube];
     self.waterMesh = [Mesh plane:200];
+    self.sphereMesh = [Mesh sphere:10];
     
     // water
     self.water = [[Water alloc] init];
@@ -352,7 +364,26 @@ typedef enum {
 }
 
 - (void)renderSphere {
+    [self.water.texA bind:0];
+    [self.water.texA bindUniform:UNIFORM_NAME_WATER ofProgram:self.sphereShader];
+    [self.causticTex bind:1];
+    [self.causticTex bindUniform:UNIFORM_NAME_CAUSTIC ofProgram:self.sphereShader];
     
+    UniformValue v;
+    v.m4 = self.modelViewProjectionMatrix;
+    [self.sphereShader setUniformValue:v byName:UNIFORM_NAME_MVP_MATRIX];
+    v.v3 = self.center;
+    [self.sphereShader setUniformValue:v byName:UNIFORM_NAME_SPHERECENTER];
+    v.f = self.radius;
+    [self.sphereShader setUniformValue:v byName:UNIFORM_NAME_SPHERERADIUS];
+    v.v3 = self.lightDir;
+    [self.sphereShader setUniformValue:v byName:UNIFORM_NAME_LIGHT];
+    
+    [self.sphereShader use];
+    [self.sphereMesh draw];
+    
+    [self.water.texA unbind:0];
+    [self.causticTex unbind:1];
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
