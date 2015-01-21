@@ -6,7 +6,7 @@
 //  Copyright (c) 2015年 luma. All rights reserved.
 //
 #ifdef GL_ES
-precision highp float;
+precision mediump float;
 #endif
 
 attribute vec4 position;
